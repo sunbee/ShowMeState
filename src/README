@@ -1,2 +1,5 @@
 Branches with revisions as follows:
+*rev000*: Display keypad.
 *rev001*: Include calibration feature.
+*rev002*: Sense touch to enable keypad.
+

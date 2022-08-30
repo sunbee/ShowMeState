@@ -1,5 +1,6 @@
 Branches with revisions as follows:
 *rev000*: Display keypad.
-*rev001*: Include calibration feature.
-*rev002*: Sense touch to enable keypad.
+*rev001*: Include calibration feature and sense touch to enable keypad.
+*rev002*: Refactor touch-sense code into function.
+*rev003*: Refactor into OOP with class Keypad w/ "Keypad.h".
 

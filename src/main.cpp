@@ -171,38 +171,9 @@ void status(const char *msg) {
   _tft.drawString(msg, STATUS_X, STATUS_Y);
 }
 
-void setup() {
-  // put your setup code here, to run once:
-    // Use serial port
-  Serial.begin(9600);
-
-  // Initialise the TFT screen
-  _tft.init();
-
-  // Set the rotation before we calibrate
-  //_tft.setRotation(1);
-
-  // Calibrate the touch screen and retrieve the scaling factors
-  touch_calibrate();
-  //littleNamaste();
-
-  // Clear the screen
-  _tft.fillScreen(TFT_BLACK);
-
-  // Draw keypad background
-  _tft.fillRect(0, 0, 240, 320, TFT_DARKGREY);
-
-  // Draw number display area and frame
-  _tft.fillRect(DISP_X, DISP_Y, DISP_W, DISP_H, TFT_BLACK);
-  _tft.drawRect(DISP_X, DISP_Y, DISP_W, DISP_H, TFT_WHITE);
-
-  // Draw keypad
-  drawKeypad();
-}
-
-void loop() {
+void senseTouch() {
   // put your main code here, to run repeatedly:
-    uint16_t t_x = 0, t_y = 0; // To store the touch coordinates
+  uint16_t t_x = 0, t_y = 0; // To store the touch coordinates
 
   // Pressed will be set true is there is a valid touch on the screen
   bool pressed = _tft.getTouch(&t_x, &t_y);
@@ -274,5 +245,38 @@ void loop() {
       delay(10); // UI debouncing
     }
   }
+}
+
+void setup() {
+  // put your setup code here, to run once:
+    // Use serial port
+  Serial.begin(9600);
+
+  // Initialise the TFT screen
+  _tft.init();
+
+  // Set the rotation before we calibrate
+  //_tft.setRotation(1);
+
+  // Calibrate the touch screen and retrieve the scaling factors
+  touch_calibrate();
+  //littleNamaste();
+
+  // Clear the screen
+  _tft.fillScreen(TFT_BLACK);
+
+  // Draw keypad background
+  _tft.fillRect(0, 0, 240, 320, TFT_DARKGREY);
+
+  // Draw number display area and frame
+  _tft.fillRect(DISP_X, DISP_Y, DISP_W, DISP_H, TFT_BLACK);
+  _tft.drawRect(DISP_X, DISP_Y, DISP_W, DISP_H, TFT_WHITE);
+
+  // Draw keypad
+  drawKeypad();
+}
+
+void loop() {
+  senseTouch();
 }
 

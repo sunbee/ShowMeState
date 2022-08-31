@@ -2,5 +2,8 @@ Branches with revisions as follows:
 *rev000*: Display keypad.
 *rev001*: Include calibration feature and sense touch to enable keypad.
 *rev002*: Refactor touch-sense code into function.
-*rev003*: Refactor into OOP with class Keypad w/ "Keypad.h".
+*rev003*: Refactor into OOP with class Keypad w/ "Keypad.h" and "Keypad.cpp".
+*rev004*: Flesh out class AnalogClock with "AnalogClock.h" and "AnalogClock.cpp".
+*rev005*: Combine analong clock and keypad in display main.
+*rev006*: Make clock telltime.
 

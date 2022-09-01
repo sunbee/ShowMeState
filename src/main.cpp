@@ -12,6 +12,8 @@ Keypad myKeypad = Keypad();
 #include "AnalogClock.h"
 AnalogClock myClock = AnalogClock();
 
+int time_target = millis() + 1000;
+
 void setup() {
   // put your setup code here, to run once:
     // Use serial port
@@ -39,6 +41,10 @@ void setup() {
 }
 
 void loop() {
+  if (millis() > time_target) {
+    time_target += 1000;
+    myClock.advanceTime1s();
+  }
   //myKeypad.senseTouch();
 }
 

@@ -9,52 +9,60 @@ void AnalogClock::init(TFT_eSPI* display) {
 }
 
 // Get/set hours, minutes and seconds for showing time
-int  AnalogClock::get_hh() {
-    return this->hh;
-};
 void AnalogClock::set_hh(int hh) {
-    this->hh_tminus1 = this->hh;
-    this->hh = hh;
-};
-int  AnalogClock::get_mm() {
-    return this->mm;
+    this->_hh_tminus1 = this->_hh;
+    this->_hh = hh;
 };
 void AnalogClock::set_mm(int mm) {
-    this->mm_tminus1 = this->mm;
-    this->mm = mm;
-};
-int  AnalogClock::get_ss() {
-    return this->ss;
+    this->_mm_tminus1 = this->_mm;
+    this->_mm = mm;
 };
 void AnalogClock::set_ss(int ss) {
-    this->ss_tminus1 = this->ss;
-    this->ss = ss;
+    this->_ss_tminus1 = this->_ss;
+    this->_ss = ss;
 };
 // Get/set center and circumference of clock face
-int  AnalogClock::get_x0() {
-    return this->x0;
-};
 void AnalogClock::set_x0(int x0) {
-    this->x0 = x0;
-};
-int  AnalogClock::get_y0() {
-    return this->y0;
+    this->_x0 = x0;
 };
 void AnalogClock::set_y0(int y0) {
-    this->y0 = y0;
-};
-int  AnalogClock::get_radius() {
-    return this->radius;
+    this->_y0 = y0;
 };
 void AnalogClock::set_radius(int radius) {
-    this->radius = radius;
+    this->_radius = radius;
 };
+
+void AnalogClock::advanceTime1s() {
+    int ss = this->_ss;
+    int mm = this->_mm;
+    int hh = this->_hh;
+    ss += 1;
+    if (ss == 60) {
+        ss = 0;
+        mm += 1;
+        if(mm > 59) {
+            mm = 0;
+            hh += 1;
+            if (hh == 12) {
+                hh = 0;
+            }
+        }
+    }
+    this->set_ss(ss);
+    this->set_mm(mm);
+    this->set_hh(hh);
+
+    String hhmmss = (String)hh + ":" + mm + ":" + ss + " AFTER";
+    Serial.println(hhmmss);
+
+    this->showTime();
+}
 
 void AnalogClock::drawClock() {
     // Get center and circumference
-    int x0 = this->x0;
-    int y0 = this->y0;
-    int radius = this->radius;
+    int x0 = this->_x0;
+    int y0 = this->_y0;
+    int radius = this->_radius;
 
     // Draw clock face
     (*this->_tft).fillCircle(x0, y0, radius, TFT_CYAN);
@@ -82,12 +90,17 @@ void AnalogClock::drawClock() {
     }
 }
 
-void AnalogClock::showTime() {
-    this->eraseTime();
-
-    int hh = this->hh;
-    int mm = this->mm;
-    int ss = this->ss;
+void AnalogClock::renderHands(bool erase=false) {
+    int color = TFT_RED;
+    int hh = this->_hh;
+    int mm = this->_mm;
+    int ss = this->_ss;
+    if (erase == true) {
+        color = TFT_BLACK;
+        hh = this->_hh_tminus1;
+        mm = this->_mm_tminus1;
+        ss = this->_ss_tminus1;
+    }
 
     float ssdeg = ss*6 - 90;
     float mmdeg = mm*6 + ssdeg*(6.0/360) - 90;
@@ -97,55 +110,32 @@ void AnalogClock::showTime() {
     float mmrad = mmdeg * 0.0174532925;
     float hhrad = hhdeg * 0.0174532925;
 
-    float hhradius = this->radius * 0.6;
-    float mmradius = this->radius * 0.75;
-    float ssradius = this->radius * 0.90;
+    float hhradius = this->_radius * 0.6;
+    float mmradius = this->_radius * 0.75;
+    float ssradius = this->_radius * 0.90;
 
-    int x0 = this->x0;
-    int y0 = this->y0;
+    int x0 = this->_x0;
+    int y0 = this->_y0;
 
     // Hour hand
     float x_hh = x0 + hhradius*cos(hhrad);
     float y_hh = y0 + hhradius*sin(hhrad);
-    (*this->_tft).drawLine(x0, y0, x_hh, y_hh, TFT_RED);
+    (*this->_tft).drawLine(x0, y0, x_hh, y_hh, color);
 
     // Minute hand
     float x_mm = x0 + mmradius*cos(mmrad);
     float y_mm = y0 + mmradius*sin(mmrad);
-    (*this->_tft).drawLine(x0, y0, x_mm, y_mm, TFT_RED);
+    (*this->_tft).drawLine(x0, y0, x_mm, y_mm, color);
 
     // Second hand
+    float x_ss = x0 + ssradius*cos(ssrad);
+    float y_ss = y0 + ssradius*sin(ssrad);
+    (*this->_tft).drawLine(x0, y0, x_ss, y_ss, color);
+
 }
 
-void AnalogClock::eraseTime() {
-    int hh = this->hh_tminus1;
-    int mm = this->mm_tminus1;
-    int ss = this->ss_tminus1;
-
-    float ssdeg = ss*6 - 90;
-    float mmdeg = mm*6 + ssdeg*(6/360) - 90;
-    float hhdeg = hh*30 + mmdeg*(30/360) - 90;
-
-    float ssrad = ssdeg * 0.0174532925;
-    float mmrad = mmdeg * 0.0174532925;
-    float hhrad = hhdeg * 0.0174532925;
-
-    float hhradius = this->radius * 0.6;
-    float mmradius = this->radius * 0.75;
-    float ssradius = this->radius * 0.90;
-
-    int x0 = this->x0;
-    int y0 = this->y0;
-
-    // Hour hand
-    float x_hh = x0 + hhradius*cos(hhrad);
-    float y_hh = y0 + hhradius*sin(hhrad);
-    (*this->_tft).drawLine(x0, y0, x_hh, y_hh, TFT_BLACK);
-
-    // Minute hand
-    float x_mm = x0 + mmradius*cos(mmrad);
-    float y_mm = y0 + mmradius*cos(mmrad);
-    (*this->_tft).drawLine(x0, y0, x_mm, y_mm, TFT_BLACK);
-
-    // Second hand
+void AnalogClock::showTime() {
+    Serial.println("Change!");
+    this->renderHands(true);
+    this->renderHands();
 }

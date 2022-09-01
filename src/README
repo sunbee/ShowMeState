@@ -1,2 +1,7 @@
-Branches with revisions as follows:
-*rev001*: Include calibration feature.
+*rev000*: Display keypad.
+*rev001*: Include calibration feature and enable keypad.
+*rev002*: Package the code that enables keypad into a function.
+*rev003*: Create class Keypad with methods for drawing/calibration/sensing keypad.
+*rev004*: Add a new class for analog clock.
+*rev005*: Combine analong clock and keypad in display main.
+*rev006*: Add feature to obtain local time from the internet.

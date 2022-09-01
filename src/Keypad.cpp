@@ -23,6 +23,13 @@ void Keypad::init(TFT_eSPI* display) {
 }
 
 void Keypad::drawKeypad() {
+  // Draw keypad background
+  (*this->_tft).fillRect(0, 0, 240, 320, TFT_DARKGREY);
+
+  // Draw number display area and frame
+  (*this->_tft).fillRect(DISP_X, DISP_Y, DISP_W, DISP_H, TFT_BLACK);
+  (*this->_tft).drawRect(DISP_X, DISP_Y, DISP_W, DISP_H, TFT_WHITE);
+  
   // Draw the keys
   for (uint8_t row = 0; row < 5; row++) {
     for (uint8_t col = 0; col < 3; col++) {

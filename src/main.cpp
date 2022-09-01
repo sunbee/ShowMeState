@@ -23,7 +23,10 @@ void setup() {
   myClock.init(&_tft);
 
   // Set the rotation before we calibrate
-  //_tft.setRotation(1);
+  // _tft.setRotation(1);
+
+  // Clear the screen
+  _tft.fillScreen(TFT_BLACK);
 
   // Calibrate the touch screen and retrieve the scaling factors
   // myKeypad.touchCalibrate();

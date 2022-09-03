@@ -141,9 +141,15 @@ void AnalogClock::renderHands(bool erase=false) {
     * by drawing a black rectangle. Thus avoid flicker arising
     * from repeated draw-erase cycles over the whole display area.
     */
+    char HMS[9];
+    snprintf(HMS, 9, "%02d:%02d:%02d", hh, mm, ss);
+    int HMS_width = (*this->_tft).drawString(HMS, LCD_DISPLAY_X+4, LCD_DISPLAY_Y+10, 7);
+    (*this->_tft).fillRect(LCD_DISPLAY_X+4+HMS_width, LCD_DISPLAY_Y+10, LCD_DISPLAY_WIDTH-5-HMS_width, LCD_DISPLAY_HEIGHT-12, TFT_BLACK);
+    /*
     String HHMMSS = (String)hh + ":" + mm + ":" + ss;
     int HHMMSS_width = (*this->_tft).drawString(HHMMSS, LCD_DISPLAY_X+4, LCD_DISPLAY_Y+10, 7);
     (*this->_tft).fillRect(LCD_DISPLAY_X+4+HHMMSS_width, LCD_DISPLAY_Y+10, LCD_DISPLAY_WIDTH-5-HHMMSS_width, LCD_DISPLAY_HEIGHT-12, TFT_BLACK);
+    */
 }
 
 void AnalogClock::showTime() {

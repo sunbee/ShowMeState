@@ -85,9 +85,11 @@ void AnalogClock::drawClock() {
         if (theta_adj % 90 == 0) (*this->_tft).fillCircle(x_inner, y_inner, 3, TFT_DARKCYAN);
 
         if (theta_adj % 5 == 0) (*this->_tft).fillCircle(x_inner, y_inner, 2, TFT_BLUE);
-
-        this->showTime();
     }
+
+    (*this->_tft).fillRect(LCD_DISPLAY_X, LCD_DISPLAY_Y, LCD_DISPLAY_WIDTH, LCD_DISPLAY_HEIGHT, TFT_BLACK);
+    (*this->_tft).drawRect(LCD_DISPLAY_X, LCD_DISPLAY_Y, LCD_DISPLAY_WIDTH, LCD_DISPLAY_HEIGHT, TFT_WHITE);
+    this->showTime();
 }
 
 void AnalogClock::renderHands(bool erase=false) {
@@ -132,6 +134,16 @@ void AnalogClock::renderHands(bool erase=false) {
     float y_ss = y0 + ssradius*sin(ssrad);
     (*this->_tft).drawLine(x0, y0, x_ss, y_ss, color);
 
+    // 7 Segment LCD Display
+    /*
+    * Draw the HHMMSS string inside the rectangular LCD display
+    * and erase the vacant part of the display after the string
+    * by drawing a black rectangle. Thus avoid flicker arising
+    * from repeated draw-erase cycles over the whole display area.
+    */
+    String HHMMSS = (String)hh + ":" + mm + ":" + ss;
+    int HHMMSS_width = (*this->_tft).drawString(HHMMSS, LCD_DISPLAY_X+4, LCD_DISPLAY_Y+10, 7);
+    (*this->_tft).fillRect(LCD_DISPLAY_X+4+HHMMSS_width, LCD_DISPLAY_Y+10, LCD_DISPLAY_WIDTH-5-HHMMSS_width, LCD_DISPLAY_HEIGHT-12, TFT_BLACK);
 }
 
 void AnalogClock::showTime() {

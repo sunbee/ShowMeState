@@ -32,7 +32,6 @@ class AnalogClock {
         int _hh_tminus1;
         int _mm_tminus1;
         int _ss_tminus1;
-
 };
 
 

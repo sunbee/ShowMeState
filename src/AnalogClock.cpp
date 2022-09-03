@@ -52,8 +52,8 @@ void AnalogClock::advanceTime1s() {
     this->set_mm(mm);
     this->set_hh(hh);
 
-    String hhmmss = (String)hh + ":" + mm + ":" + ss + " AFTER";
-    Serial.println(hhmmss);
+    String hhmmss = (String)hh + ":" + mm + ":" + ss;
+    if (dEbUg) Serial.println(hhmmss); 
 
     this->showTime();
 }
@@ -135,7 +135,6 @@ void AnalogClock::renderHands(bool erase=false) {
 }
 
 void AnalogClock::showTime() {
-    Serial.println("Change!");
     this->renderHands(true);
     this->renderHands();
 }

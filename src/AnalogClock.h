@@ -3,6 +3,8 @@
 
 #include <TFT_eSPI.h>
 
+#define dEbUg false
+
 class AnalogClock {
     public:
         AnalogClock();

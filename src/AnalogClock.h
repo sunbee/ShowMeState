@@ -35,7 +35,7 @@ class AnalogClock {
         void set_radius(int);
     private:
         TFT_eSPI* _tft;
-        int _hh = 10;        // 1 to 12
+        int _hh = 10;        // 0 to 23
         int _mm = 10;        // 0 to 59
         int _ss = 30;        // 0 to 59
         int _x0 = 120;       // Center X

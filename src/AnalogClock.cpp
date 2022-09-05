@@ -43,7 +43,7 @@ void AnalogClock::advanceTime1s() {
         if(mm > 59) {
             mm = 0;
             hh += 1;
-            if (hh == 12) {
+            if (hh == 24) {
                 hh = 0;
             }
         }

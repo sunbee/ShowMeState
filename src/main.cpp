@@ -70,7 +70,7 @@ void loop() {
   if (first == true) {
     timeClient.update();
     Serial.println(timeClient.getFormattedTime());
-    myClock.set_hh(timeClient.getHours() % 12);
+    myClock.set_hh(timeClient.getHours());
     myClock.set_mm(timeClient.getMinutes());
     myClock.set_ss(timeClient.getSeconds());
     myClock.showTime();

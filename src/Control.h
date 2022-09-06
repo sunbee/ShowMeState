@@ -16,7 +16,7 @@ struct Outlet {
     * The first is a C structure with slots 
     * for year, month, day and hours, mins, secs.
     * The second is the number of seconds since epoch
-    * that is midnight at the turn to January 1, 1970.
+    * that is midnight at the turn of January 1, 1970.
     * These two are interchangeable. 
     * In practical case, our app is concerned
     * with a daily schedule of on/off operations.
@@ -24,7 +24,7 @@ struct Outlet {
     * and specify the time in hours, minutes and seconds,
     * storing the data with the struct tm 
     * and making calculations such as time-difference
-    *  using time_t.
+    * using time_t.
     */
     int  ID;
     bool state_t            = false;

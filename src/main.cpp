@@ -100,12 +100,12 @@ void loop() {
     myClock.advanceTime1s();
   }
   if (abs(millis() / 1000.00 - delta2_ON) < 1) {
-    myControl.update_socket_state(0, true);
+    myControl.update_esocket_state(0, true);
   }
   if (abs(millis() / 1000.00 - delta2_OFF) < 1) {
-    myControl.update_socket_state(0, false);
+    myControl.update_esocket_state(0, false);
   }
-  if (myControl.flag_socket_state_transition(0)) Serial.println(myControl.get_socket_state(0) ? "ON" : "OFF");
+  if (myControl.flag_esocket_state_transition(0)) Serial.println(myControl.get_esocket_state(0) ? "ON" : "OFF");
 
   //myKeypad.senseTouch();
 }

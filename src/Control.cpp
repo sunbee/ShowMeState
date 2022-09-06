@@ -52,15 +52,15 @@ double Control::delta2_now(int ID, int hh_now, int mm_now, int ss_now, bool ON=t
     return difftime(raw_time_target, raw_time_now);
 }
 
-void Control::update_socket_state(int ID, bool new_state) {
+void Control::update_esocket_state(int ID, bool new_state) {
     this->_sockets[ID].state_t_minus_one = this->_sockets[ID].state_t;
     this->_sockets[ID].state_t = new_state;
 }
 
-bool Control::flag_socket_state_transition(int ID) {
+bool Control::flag_esocket_state_transition(int ID) {
     return this->_sockets[ID].state_t != this->_sockets[ID].state_t_minus_one;
 }
 
-bool Control::get_socket_state(int ID) {
+bool Control::get_esocket_state(int ID) {
     return this->_sockets[ID].state_t;
 }

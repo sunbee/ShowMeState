@@ -39,9 +39,9 @@ class Control {
         void switch_me(int, bool);
         void set_target(int, int, int, int, bool);
         double delta2_now(int, int, int, int, bool);
-        void update_socket_state(int, bool);
-        bool flag_socket_state_transition(int);
-        bool get_socket_state(int);
+        void update_esocket_state(int, bool);
+        bool flag_esocket_state_transition(int);
+        bool get_esocket_state(int);
     private:
         struct Outlet _sockets[NUMBER_OF_OUTLETS];
 };

@@ -7,28 +7,6 @@
 #include <WiFiUdp.h>
 
 #include <time.h>
-struct tm t = {0};
-
-time_t secondsSinceEpoch(int hh, int mm, int ss) {
-  struct tm t = {0};
-  /* 
-  * Represent time in seconds since epoch and 
-  * use it in calculating time difference
-  * between current (clock) time and target time.
-  * For action scheduled at a fixed time each day, 
-  * pick any reference date for year, month and day.
-  * Gurudev's b'day is 05/13/1956. Use it.
-  */
-  t.tm_year = 56;   // Ref 1900  
-  t.tm_mon = 4;     // 0 to 11
-  t.tm_mday = 13;
-  t.tm_hour = hh;
-  t.tm_min = mm;
-  t.tm_sec = ss;
-  time_t raw_time = mktime(&t);
-  Serial.println(ctime(&raw_time));
-  return raw_time;
-}
 
 #include "config.h"
 
@@ -48,14 +26,14 @@ Keypad myKeypad = Keypad();
 #include "AnalogClock.h"
 AnalogClock myClock = AnalogClock();
 
+#include "Control.h"
+Control myControl = Control();
+double delta2_ON;
+double delta2_OFF;
+
 int time_target = millis() + 1000;
 
 bool first = true;
-
-double deltaTo_one_on;
-double deltaTo_one_off;
-bool one = false;
-bool one_t_minus_one = false;
 
 void setup() {
   // put your setup code here, to run once:
@@ -95,15 +73,14 @@ void setup() {
   myClock.drawClock();
 
   // Test time
-  time_t raw = secondsSinceEpoch(17, 34, 10);
-  Serial.print("Secs: ");
-  Serial.println(long(&raw));
-  deltaTo_one_on = difftime(secondsSinceEpoch(18, 32, 0), secondsSinceEpoch(18, 31, 30));
-  deltaTo_one_off = difftime(secondsSinceEpoch(18, 32, 30), secondsSinceEpoch(18, 31, 30));
+  myControl.set_target(0, 23, 55, 0, true);
+  myControl.set_target(0, 23, 55, 30, false);
+  delta2_ON = myControl.delta2_now(0, 23, 54, 0, true);
+  delta2_OFF = myControl.delta2_now(0, 23, 54, 0, false);
   Serial.print("Switching 1 on in ");
-  Serial.println(deltaTo_one_on);
+  Serial.println(delta2_ON);
   Serial.print("Switching 1 off in ");
-  Serial.println(deltaTo_one_off);
+  Serial.println(delta2_OFF);
 }
 
 void loop() {
@@ -122,15 +99,13 @@ void loop() {
     time_target += 1000;
     myClock.advanceTime1s();
   }
-  if (abs(millis() / 1000.00 - deltaTo_one_on) < 1) {
-    one_t_minus_one = one;
-    one = true;
+  if (abs(millis() / 1000.00 - delta2_ON) < 1) {
+    myControl.update_socket_state(0, true);
   }
-  if (abs(millis() / 1000.00 - deltaTo_one_off) < 1) {
-    one_t_minus_one = one;
-    one = false;
+  if (abs(millis() / 1000.00 - delta2_OFF) < 1) {
+    myControl.update_socket_state(0, false);
   }
-  if (one_t_minus_one != one) Serial.println(one ? "ON" : "OFF");
+  if (myControl.flag_socket_state_transition(0)) Serial.println(myControl.get_socket_state(0) ? "ON" : "OFF");
 
   //myKeypad.senseTouch();
 }

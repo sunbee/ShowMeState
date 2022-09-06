@@ -21,6 +21,7 @@ void AnalogClock::set_ss(int ss) {
     this->_ss_tminus1 = this->_ss;
     this->_ss = ss;
 };
+
 // Get/set center and circumference of clock face
 void AnalogClock::set_x0(int x0) {
     this->_x0 = x0;

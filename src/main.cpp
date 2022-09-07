@@ -31,6 +31,8 @@ Control myControl = Control();
 double delta2_ON;
 double delta2_OFF;
 
+struct tm t_now = {0};
+
 int time_target = millis() + 1000;
 
 bool first = true;
@@ -70,42 +72,62 @@ void setup() {
   // myKeypad.drawKeypad();
 
   // Draw clock
-  myClock.drawClock();
+  timeClient.update();
+  Serial.println(timeClient.getFormattedTime());
+  t_now.tm_year   = 56;
+  t_now.tm_mon    = 4;
+  t_now.tm_mday   = 13;
+  t_now.tm_hour   = timeClient.getHours();
+  t_now.tm_min    = timeClient.getMinutes();
+  t_now.tm_sec    = timeClient.getSeconds();
 
-  // Test time
-  myControl.set_target(0, 23, 55, 0, true);
-  myControl.set_target(0, 23, 55, 30, false);
-  delta2_ON = myControl.delta2_now(0, 23, 54, 0, true);
-  delta2_OFF = myControl.delta2_now(0, 23, 54, 0, false);
-  Serial.print("Switching 1 on in ");
-  Serial.println(delta2_ON);
-  Serial.print("Switching 1 off in ");
-  Serial.println(delta2_OFF);
+  myClock.drawClock();
+  myClock.set_hh(t_now.tm_hour);
+  myClock.set_mm(t_now.tm_min);
+  myClock.set_ss(t_now.tm_sec);
+  myClock.showTime();
+
+  // Test time - all eSockets have same on/off cycle
+  // TODO: Load settings from config.json to configure eSockets via class Control's constructor 
+  struct tm t_on = t_now; t_on.tm_min += 1; 
+  struct tm t_off = t_now; t_off.tm_min += 2; 
+  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+    myControl._eSockets[i].t_ON = t_on;
+    myControl._eSockets[i].t_OFF = t_off;
+  }
+  myControl.initialize_deltas(t_now);
+  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+    Serial.print("Switching ON in ");
+    Serial.println(myControl._eSockets[i].delta_on_seconds);
+    Serial.print("Switching OFF in ");
+    Serial.println(myControl._eSockets[i].delta_off_seconds);
+  }
 }
 
-void loop() {
-  if (first == true) {
-    timeClient.update();
-    Serial.println(timeClient.getFormattedTime());
-    myClock.set_hh(timeClient.getHours());
-    myClock.set_mm(timeClient.getMinutes());
-    myClock.set_ss(timeClient.getSeconds());
-
-    myClock.showTime();
-    first = false;
-  }
-  
+void loop() {  
   if (millis() > time_target) {
     time_target += 1000;
     myClock.advanceTime1s();
+    myControl.advanceCursor1s();
   }
-  if (abs(millis() / 1000.00 - delta2_ON) < 1) {
-    myControl.update_esocket_state(0, true);
+
+  bool flag_one_on;
+  bool flag_one_off;
+  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+    if (abs(millis() / 1000.00 - myControl._eSockets[i].delta_on_seconds) < 1) { 
+      myControl._eSockets[i].state_t_minus_one = myControl._eSockets[i].state_t;
+      myControl._eSockets[i].state_t = true;
+      flag_one_on = myControl._eSockets[i].state_t != myControl._eSockets[i].state_t_minus_one;
+    
+    }
+    if (abs(millis() / 1000.00 - myControl._eSockets[i].delta_off_seconds) < 1) { 
+      myControl._eSockets[i].state_t_minus_one = myControl._eSockets[i].state_t;
+      myControl._eSockets[i].state_t = false;
+      flag_one_off = myControl._eSockets[i].state_t != myControl._eSockets[i].state_t_minus_one;
+    }
   }
-  if (abs(millis() / 1000.00 - delta2_OFF) < 1) {
-    myControl.update_esocket_state(0, false);
-  }
-  if (myControl.flag_esocket_state_transition(0)) Serial.println(myControl.get_esocket_state(0) ? "ON" : "OFF");
+  if (flag_one_on)  Serial.println("1-ON"); 
+  if (flag_one_off) Serial.println("1-OFF");
 
   //myKeypad.senseTouch();
 }

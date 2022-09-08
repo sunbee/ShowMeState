@@ -47,41 +47,6 @@ void Control::advanceCursor1s() {
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
         this->_eSockets[i].delta_on     -= 1;
         this->_eSockets[i].delta_off    -= 1;
-
-        this->_eSockets[i].tx_ON    = (this->_eSockets[i].delta_on == 0);
-        this->_eSockets[i].tx_OFF   = (this->_eSockets[i].delta_off == 0);     
     }
 }
 
-// void Control::set_target(int ID, struct tm t_target, bool ON=true) {
-//     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-//         if (this->_eSockets[i].ID == ID) {
-//             ON ? this->_eSockets[ID].t_ON = t_target : this->_eSockets[ID].t_OFF = t_target;
-//         }
-//     }
-// }
-
-// double Control::delta2_now(int ID, struct tm t_now, bool ON=true) {
-//     /*
-//     * Give this method the current time 
-//     * and obtain delta to target ON/OFF time
-//     * for a given outlet.
-//     */
-//    for (int )
-//     time_t raw_time_now = mktime(&t_now);
-//     time_t raw_time_target = ON ? mktime(&this->_eSockets[ID].t_ON) : mktime(&this->_eSockets[ID].t_OFF);
-//     return difftime(raw_time_target, raw_time_now);
-// }
-
-// void Control::update_eSocket_state(int ID, bool new_state) {
-//     this->_eSockets[ID].state_t_minus_one = this->_eSockets[ID].state_t;
-//     this->_eSockets[ID].state_t = new_state;
-// }
-
-// bool Control::flag_eSocket_state_transition(int ID) {
-//     return this->_eSockets[ID].state_t != this->_eSockets[ID].state_t_minus_one;
-// }
-
-// bool Control::get_eSocket_state(int ID) {
-//     return this->_eSockets[ID].state_t;
-// }

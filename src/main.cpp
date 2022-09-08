@@ -113,9 +113,9 @@ void loop() {
     myControl.advanceCursor1s();
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
       Serial.print(myControl._eSockets[i].delta_on);
-      Serial.println(myControl._eSockets[i].tx_ON ? "SENT MSG ON" : "NOT");
+      if (myControl._eSockets[i].delta_on == 0) Serial.println("SENT MSG ON");
       Serial.print(myControl._eSockets[i].delta_off);
-      Serial.println(myControl._eSockets[i].tx_OFF ? "SENT MSG OFF" : "NOT");
+      if (myControl._eSockets[i].delta_off == 0) Serial.println("SENT MSG OFF");
     }
   }
 

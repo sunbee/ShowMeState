@@ -8,12 +8,10 @@
 
 struct eSocket {
     int  ID;
-    bool tx_ON                  = false;
-    bool tx_OFF                 = false;
-    struct tm t_ON              = {0};
-    struct tm t_OFF             = {0};
-    double delta_on             = -1;       // Undefined
-    double delta_off            = -1;       // Undefined
+    struct tm t_ON              = {0};      // Timestamp for switching outlet ON..
+    struct tm t_OFF             = {0};      // and OFF
+    double delta_on             = -1;       // Time (secs) to event,
+    double delta_off            = -1;       // 
 };
 
 class Control {

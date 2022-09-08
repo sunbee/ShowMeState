@@ -38,15 +38,18 @@ void Control::initialize_deltas(struct tm t_now) {
         time_t raw_t_ON     = mktime(&(this->_eSockets[i].t_ON)); 
         time_t raw_t_OFF    = mktime(&(this->_eSockets[i].t_OFF));
         
-        this->_eSockets[i].delta_on_seconds     = difftime(raw_t_ON, raw_t_now);
-        this->_eSockets[i].delta_off_seconds    = difftime(raw_t_OFF, raw_t_now);
+        this->_eSockets[i].delta_on     = difftime(raw_t_ON, raw_t_now);
+        this->_eSockets[i].delta_off    = difftime(raw_t_OFF, raw_t_now);
     }
 };
 
 void Control::advanceCursor1s() {
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
-        this->_eSockets[i].delta_on_seconds     -= 1;
-        this->_eSockets[i].delta_off_seconds    -= 1;
+        this->_eSockets[i].delta_on     -= 1;
+        this->_eSockets[i].delta_off    -= 1;
+
+        this->_eSockets[i].tx_ON    = (this->_eSockets[i].delta_on == 0);
+        this->_eSockets[i].tx_OFF   = (this->_eSockets[i].delta_off == 0);     
     }
 }
 

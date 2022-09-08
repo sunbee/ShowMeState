@@ -1,18 +1,19 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#include <Arduino.h>
 #include <time.h>
 
 #define NUMBER_OF_ESOCKETS   3
 
 struct eSocket {
     int  ID;
-    bool state_t                = false;
-    bool state_t_minus_one      = false;
+    bool tx_ON                  = false;
+    bool tx_OFF                 = false;
     struct tm t_ON              = {0};
     struct tm t_OFF             = {0};
-    double delta_on_seconds     = -1;       // Undefined
-    double delta_off_seconds    = -1;       // Undefined
+    double delta_on             = -1;       // Undefined
+    double delta_off            = -1;       // Undefined
 };
 
 class Control {

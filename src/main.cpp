@@ -89,18 +89,20 @@ void setup() {
 
   // Test time - all eSockets have same on/off cycle
   // TODO: Load settings from config.json to configure eSockets via class Control's constructor 
-  struct tm t_on = t_now; t_on.tm_min += 1; 
-  struct tm t_off = t_now; t_off.tm_min += 2; 
+  struct tm t_on = t_now;  
+  struct tm t_off = t_now;  
   for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+    t_on.tm_sec += i+30;
+    t_off.tm_sec += i+60;
     myControl._eSockets[i].t_ON = t_on;
     myControl._eSockets[i].t_OFF = t_off;
   }
   myControl.initialize_deltas(t_now);
   for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
     Serial.print("Switching ON in ");
-    Serial.println(myControl._eSockets[i].delta_on_seconds);
+    Serial.println(myControl._eSockets[i].delta_on);
     Serial.print("Switching OFF in ");
-    Serial.println(myControl._eSockets[i].delta_off_seconds);
+    Serial.println(myControl._eSockets[i].delta_off);
   }
 }
 
@@ -109,25 +111,13 @@ void loop() {
     time_target += 1000;
     myClock.advanceTime1s();
     myControl.advanceCursor1s();
-  }
-
-  bool flag_one_on;
-  bool flag_one_off;
-  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-    if (abs(millis() / 1000.00 - myControl._eSockets[i].delta_on_seconds) < 1) { 
-      myControl._eSockets[i].state_t_minus_one = myControl._eSockets[i].state_t;
-      myControl._eSockets[i].state_t = true;
-      flag_one_on = myControl._eSockets[i].state_t != myControl._eSockets[i].state_t_minus_one;
-    
-    }
-    if (abs(millis() / 1000.00 - myControl._eSockets[i].delta_off_seconds) < 1) { 
-      myControl._eSockets[i].state_t_minus_one = myControl._eSockets[i].state_t;
-      myControl._eSockets[i].state_t = false;
-      flag_one_off = myControl._eSockets[i].state_t != myControl._eSockets[i].state_t_minus_one;
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+      Serial.print(myControl._eSockets[i].delta_on);
+      Serial.println(myControl._eSockets[i].tx_ON ? "SENT MSG ON" : "NOT");
+      Serial.print(myControl._eSockets[i].delta_off);
+      Serial.println(myControl._eSockets[i].tx_OFF ? "SENT MSG OFF" : "NOT");
     }
   }
-  if (flag_one_on)  Serial.println("1-ON"); 
-  if (flag_one_off) Serial.println("1-OFF");
 
   //myKeypad.senseTouch();
 }

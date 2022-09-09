@@ -101,8 +101,8 @@ void setup() {
   struct tm t_on = t_now;  
   struct tm t_off = t_now;  
   for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-    t_on.tm_sec += i+30;
-    t_off.tm_sec += i+60;
+    t_on.tm_sec += (i+1)*10;
+    t_off.tm_sec += (i+1)*10 + 30;
     myControl._eSockets[i].t_ON = t_on;
     myControl._eSockets[i].t_OFF = t_off;
   }
@@ -124,32 +124,40 @@ void loop() {
     myControl.advanceCursor1s();
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
       Serial.print(myControl._eSockets[i].delta_on);
-      if (myControl._eSockets[i].delta_on == 0) action = i*2 - 1; // 1, 3, 5
+      if (myControl._eSockets[i].delta_on == 0) action = (i % 2) + i + 1; // 1, 3, 5
       Serial.print(myControl._eSockets[i].delta_off);
-      if (myControl._eSockets[i].delta_off == 0) action = i*2;    // 2, 4, 6
+      if (myControl._eSockets[i].delta_off == 0) action = (i % 2) + i;    // 2, 4, 6
     }
 
     switch(action) {
       case 1:
         Serial.println("LED#1 ON");
         mySwitch.send(1949669955, 32);
+        break;
       case 2: 
         Serial.println("LED#1 OFF");
         mySwitch.send(1949672782, 32);
+        break;
       case 3:
         Serial.println("LED#2 ON");
         mySwitch.send(1949668413, 32);
+        break;
       case 4:
         Serial.println("LED#2 OFF");
         mySwitch.send(1949674324, 32); 
+        break;
       case 5:
         Serial.println("Fan ON");
         mySwitch.send(1949670469, 32);
+        break;
       case 6:
         Serial.println("Fan OFF");
         mySwitch.send(1949672268, 32);
+        break;
       default:
+        Serial.print(action);
         Serial.println("SENT NO TX");
+        break;
     }
   }
   //myKeypad.senseTouch();

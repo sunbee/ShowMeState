@@ -3,7 +3,8 @@
 *rev002*: Package the code that enables keypad into a function.
 *rev003*: Create class Keypad with methods for drawing/calibration/sensing keypad.
 *rev004*: Add a new class for analog clock.
-*rev005*: Combine analong clock and keypad in display main.
-*rev006*: Add feature to obtain local time from the internet.
+*rev005*: Add a class Timer for controlling outlets and operate p
+*rev006*: Combine analong clock and keypad in display main.
+*rev007*: Add feature to obtain local time from the internet.
 
 Ref: [gist](https://gist.github.com/sunbee/68fbf68458fda3a0b3dc803c2ee610a9) with an explanation of functions for drawing, calibration and sensing keypad. 

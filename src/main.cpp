@@ -116,14 +116,16 @@ void setup() {
 }
 
 void loop() {  
+  short int task_ID   = 0;
+  long int  task_code = 0;
+  String log_record;  
+  
+  // Update and publish the plan every second
   if (millis() > time_target) {
     time_target += 1000;
     myClock.advanceTime1s();
     myControl.advanceCursor1s();
 
-    short int task_ID   = 0;
-    long int  task_code = 0;
-    String log_record;
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
       log_record += (String)"__" + myControl._eSockets[i].delta_on;
       if (myControl._eSockets[i].delta_on == 0) {
@@ -139,43 +141,61 @@ void loop() {
     
     if (task_ID != 0) log_record += (String)"__Task ID " + task_ID + "__Code " + task_code;
     
-    switch(task_ID) {
+    switch(task_ID) { // Print out the plan
       case 1:
         Serial.println("LED#1 ON");
         Serial.println(log_record);
-        mySwitch.send(task_code, 32);
         break;
       case 2: 
         Serial.println("LED#1 OFF");
         Serial.println(log_record);
-        mySwitch.send(task_code, 32);
         break;
       case 3:
         Serial.println("LED#2 ON");
         Serial.println(log_record);
-        mySwitch.send(task_code, 32);
         break;
       case 4:
         Serial.println("LED#2 OFF");
         Serial.println(log_record);
-        mySwitch.send(task_code, 32); 
         break;
       case 5:
         Serial.println("Fan ON");
         Serial.println(log_record);
-        mySwitch.send(task_code, 32);
         break;
       case 6:
         Serial.println("Fan OFF");
         Serial.println(log_record);
-        mySwitch.send(task_code, 32);
         break;
       default:
         Serial.println(log_record);
         break;
     }
   }
-  delay(100);
+
+  // Execute with redundancy controlled  by delay
+  switch(task_ID) { 
+    case 1:
+      mySwitch.send(task_code, 32);
+      break;
+    case 2: 
+      mySwitch.send(task_code, 32);
+      break;
+    case 3:
+      mySwitch.send(task_code, 32);
+      break;
+    case 4:
+      mySwitch.send(task_code, 32); 
+      break;
+    case 5:
+      mySwitch.send(task_code, 32);
+      break;
+    case 6:
+      mySwitch.send(task_code, 32);
+      break;
+    default:
+      break;
+  }
+  delay(100);  // 100 ms = 10x redundancy, i.e. on/off signal sent 10 times every planning cycle.
   //myKeypad.senseTouch();
 }
 

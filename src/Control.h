@@ -4,6 +4,10 @@
 #include <Arduino.h>
 #include <time.h>
 
+#include <ArduinoJson.h>
+
+//#define CONFIG_JSON "[{'ID':1,'codes':[1949669955,1949672782]}, {'ID':1,'codes':[1949669955,1949672782]}]"
+#define CONFIG_JSON "[{'ID':1,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949668413,'code_OFF':1949674324},{'ID':1,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949670469,'code_OFF':1949672268}]"
 #define NUMBER_OF_ESOCKETS   3
 
 struct eSocket {
@@ -12,8 +16,8 @@ struct eSocket {
     struct tm t_OFF             = {0};      // and OFF
     double delta_on             = -1;       // Time (secs) to event,
     double delta_off            = -1;       // 
-    long int code_ON            = 1949669955;    
-    long int code_OFF           = 1949672782;
+    long int code_ON;    
+    long int code_OFF;
 };
 
 class Control {

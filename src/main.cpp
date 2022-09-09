@@ -116,50 +116,66 @@ void setup() {
 }
 
 void loop() {  
-  short int action = 0;
-
   if (millis() > time_target) {
     time_target += 1000;
     myClock.advanceTime1s();
     myControl.advanceCursor1s();
-    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-      Serial.print(myControl._eSockets[i].delta_on);
-      if (myControl._eSockets[i].delta_on == 0) action = (i % 2) + i + 1; // 1, 3, 5
-      Serial.print(myControl._eSockets[i].delta_off);
-      if (myControl._eSockets[i].delta_off == 0) action = (i % 2) + i;    // 2, 4, 6
-    }
 
-    switch(action) {
+    short int task_ID   = 0;
+    long int  task_code = 0;
+    String log_record;
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+      log_record += (String)"__" + myControl._eSockets[i].delta_on;
+      if (myControl._eSockets[i].delta_on == 0) {
+        task_ID = (i*2)+1;   // 1, 3, 5
+        task_code = myControl._eSockets[i].code_ON;
+      }
+      log_record += (String) "__" + (myControl._eSockets[i].delta_off);
+      if (myControl._eSockets[i].delta_off == 0) {
+        task_ID = (i*2)+2;  // 2, 4, 6
+        task_code = myControl._eSockets[i].code_OFF;
+      }
+    }
+    
+    if (task_ID != 0) log_record += (String)"__Task ID " + task_ID + "__Code " + task_code;
+    
+    switch(task_ID) {
       case 1:
         Serial.println("LED#1 ON");
-        mySwitch.send(1949669955, 32);
+        Serial.println(log_record);
+        mySwitch.send(task_code, 32);
         break;
       case 2: 
         Serial.println("LED#1 OFF");
-        mySwitch.send(1949672782, 32);
+        Serial.println(log_record);
+        mySwitch.send(task_code, 32);
         break;
       case 3:
         Serial.println("LED#2 ON");
-        mySwitch.send(1949668413, 32);
+        Serial.println(log_record);
+        mySwitch.send(task_code, 32);
         break;
       case 4:
         Serial.println("LED#2 OFF");
-        mySwitch.send(1949674324, 32); 
+        Serial.println(log_record);
+        mySwitch.send(task_code, 32); 
         break;
       case 5:
         Serial.println("Fan ON");
-        mySwitch.send(1949670469, 32);
+        Serial.println(log_record);
+        mySwitch.send(task_code, 32);
         break;
       case 6:
         Serial.println("Fan OFF");
-        mySwitch.send(1949672268, 32);
+        Serial.println(log_record);
+        mySwitch.send(task_code, 32);
         break;
       default:
-        Serial.print(action);
-        Serial.println("SENT NO TX");
+        Serial.println(log_record);
         break;
     }
   }
+  delay(100);
   //myKeypad.senseTouch();
 }
 

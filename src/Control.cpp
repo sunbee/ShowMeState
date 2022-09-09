@@ -1,6 +1,9 @@
 #include "Control.h"
 
 Control::Control() {
+    char configJSON[] = CONFIG_JSON;
+    StaticJsonDocument<256> configDOC;
+    DeserializationError err = deserializeJson(configDOC, configJSON);
     /*
     * TODO 
     * RREPLACE BY MECHANISM TO READ CONFIGURATION FILE   
@@ -12,7 +15,7 @@ Control::Control() {
     */
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
         struct eSocket _eSocket;
-        _eSocket.ID = i+1; // 1, 2, 3
+        _eSocket.ID = configDOC[i]["ID"]; // 1, 2, 3
         /* 
         * Represent time in seconds since epoch and 
         * use it in calculating time difference
@@ -21,12 +24,14 @@ Control::Control() {
         * pick any reference date for year, month and day.
         * Gurudev's b'day is 05/13/1956. Use it.
         */
-        _eSocket.t_ON.tm_year = 56;
-        _eSocket.t_ON.tm_mon = 4;
-        _eSocket.t_ON.tm_mday = 13;
-        _eSocket.t_OFF.tm_year = 56;
-        _eSocket.t_OFF.tm_mon = 4;
-        _eSocket.t_OFF.tm_mday = 13;
+        _eSocket.t_ON.tm_year   = 56;
+        _eSocket.t_ON.tm_mon    = 4;
+        _eSocket.t_ON.tm_mday   = 13;
+        _eSocket.t_OFF.tm_year  = 56;
+        _eSocket.t_OFF.tm_mon   = 4;
+        _eSocket.t_OFF.tm_mday  = 13;
+        _eSocket.code_ON        = configDOC[i]["code_ON"];
+        _eSocket.code_OFF       = configDOC[i]["code_OFF"];
         this->_eSockets[i] = _eSocket;
     }
 }

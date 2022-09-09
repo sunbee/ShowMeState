@@ -1,6 +1,12 @@
 #include "Control.h"
 
 Control::Control() {
+    // Configure Tx
+    this->_switch.enableTransmit(0);     // ESP8266-12E GPIO#0 ~ D3
+    this->_switch.setProtocol(1);        // Protocol no. (default is 1, will work for most outlets)
+    this->_switch.setPulseLength(320);   // Pulse length (optional)
+    this->_switch.setRepeatTransmit(3);  // Number of tx repetitions (optional)
+
     char configJSON[] = CONFIG_JSON;
     StaticJsonDocument<256> configDOC;
     DeserializationError err = deserializeJson(configDOC, configJSON);
@@ -55,3 +61,10 @@ void Control::advanceCursor1s() {
     }
 }
 
+void Control::executeTask(int ID, bool ON) {
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
+        if (this->_eSockets[i].ID == ID) {
+            ON == true ? this->_switch.send(this->_eSockets[i].code_ON, 32) : this->_switch.send(this->_eSockets[i].code_OFF, 32);    
+        }
+    }
+}

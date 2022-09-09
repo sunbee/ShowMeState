@@ -6,9 +6,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
-#include <RCSwitch.h>
-RCSwitch mySwitch = RCSwitch();
-
 #include <time.h>
 
 #include "config.h"
@@ -52,12 +49,6 @@ void setup() {
     delay (500);
     Serial.print (".");
   }
-
-  // Configure Tx
-  mySwitch.enableTransmit(0);     // ESP8266-12E GPIO#0 ~ D3
-  mySwitch.setProtocol(1);        // Protocol no. (default is 1, will work for most outlets)
-  mySwitch.setPulseLength(320);   // Pulse length (optional)
-  mySwitch.setRepeatTransmit(3);  // Number of tx repetitions (optional)
 
   // Connect to  the NTP client
   timeClient.begin();
@@ -116,86 +107,39 @@ void setup() {
 }
 
 void loop() {  
-  short int task_ID   = 0;
-  long int  task_code = 0;
+  short int task_target;      // Socket ID, -1 for SELECT NO SOCKET
+  bool      task;             // Tx code ON if true, OFF if false
   String log_record;  
   
   // Update and publish the plan every second
   if (millis() > time_target) {
+    task_target = -1;  // SELECT NO SOCKET
     time_target += 1000;
     myClock.advanceTime1s();
     myControl.advanceCursor1s();
 
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-      log_record += (String)"__" + myControl._eSockets[i].delta_on;
+      log_record += (String)"_ON_" + myControl._eSockets[i].delta_on;
       if (myControl._eSockets[i].delta_on == 0) {
-        task_ID = (i*2)+1;   // 1, 3, 5
-        task_code = myControl._eSockets[i].code_ON;
+        task_target = myControl._eSockets[i].ID;
+        task = true;
       }
-      log_record += (String) "__" + (myControl._eSockets[i].delta_off);
+      log_record += (String) "_OFF_" + (myControl._eSockets[i].delta_off);
       if (myControl._eSockets[i].delta_off == 0) {
-        task_ID = (i*2)+2;  // 2, 4, 6
-        task_code = myControl._eSockets[i].code_OFF;
+        task_target = myControl._eSockets[i].ID;
+        task = false;
       }
     }
     
-    if (task_ID != 0) log_record += (String)"__Task ID " + task_ID + "__Code " + task_code;
-    
-    switch(task_ID) { // Print out the plan
-      case 1:
-        Serial.println("LED#1 ON");
-        Serial.println(log_record);
-        break;
-      case 2: 
-        Serial.println("LED#1 OFF");
-        Serial.println(log_record);
-        break;
-      case 3:
-        Serial.println("LED#2 ON");
-        Serial.println(log_record);
-        break;
-      case 4:
-        Serial.println("LED#2 OFF");
-        Serial.println(log_record);
-        break;
-      case 5:
-        Serial.println("Fan ON");
-        Serial.println(log_record);
-        break;
-      case 6:
-        Serial.println("Fan OFF");
-        Serial.println(log_record);
-        break;
-      default:
-        Serial.println(log_record);
-        break;
-    }
+    if (task_target > 0) log_record += (String)"__Task ID " + task_target + "__Code " + (task ? "ON" : "OFF");
+    Serial.println (log_record);
   }
 
   // Execute with redundancy controlled  by delay
-  switch(task_ID) { 
-    case 1:
-      mySwitch.send(task_code, 32);
-      break;
-    case 2: 
-      mySwitch.send(task_code, 32);
-      break;
-    case 3:
-      mySwitch.send(task_code, 32);
-      break;
-    case 4:
-      mySwitch.send(task_code, 32); 
-      break;
-    case 5:
-      mySwitch.send(task_code, 32);
-      break;
-    case 6:
-      mySwitch.send(task_code, 32);
-      break;
-    default:
-      break;
+  if (task_target > 0) {
+    myControl.executeTask(task_target, task);
   }
-  delay(100);  // 100 ms = 10x redundancy, i.e. on/off signal sent 10 times every planning cycle.
+  delay(10);  // 100 ms = 10x redundancy, i.e. on/off signal sent 10 times every planning cycle.
   //myKeypad.senseTouch();
 }
 

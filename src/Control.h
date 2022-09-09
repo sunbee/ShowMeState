@@ -12,6 +12,8 @@ struct eSocket {
     struct tm t_OFF             = {0};      // and OFF
     double delta_on             = -1;       // Time (secs) to event,
     double delta_off            = -1;       // 
+    long int code_ON            = 1949669955;    
+    long int code_OFF           = 1949672782;
 };
 
 class Control {

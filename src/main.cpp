@@ -6,6 +6,9 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
+#include <RCSwitch.h>
+RCSwitch mySwitch = RCSwitch();
+
 #include <time.h>
 
 #include "config.h"
@@ -49,6 +52,12 @@ void setup() {
     delay (500);
     Serial.print (".");
   }
+
+  // Configure Tx
+  mySwitch.enableTransmit(0);     // ESP8266-12E GPIO#0 ~ D3
+  mySwitch.setProtocol(1);        // Protocol no. (default is 1, will work for most outlets)
+  mySwitch.setPulseLength(320);   // Pulse length (optional)
+  mySwitch.setRepeatTransmit(3);  // Number of tx repetitions (optional)
 
   // Connect to  the NTP client
   timeClient.begin();
@@ -107,18 +116,51 @@ void setup() {
 }
 
 void loop() {  
+  short int action = 0;
+
   if (millis() > time_target) {
     time_target += 1000;
     myClock.advanceTime1s();
     myControl.advanceCursor1s();
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
       Serial.print(myControl._eSockets[i].delta_on);
-      if (myControl._eSockets[i].delta_on == 0) Serial.println("SENT MSG ON");
+      if (myControl._eSockets[i].delta_on == 0) action = i*2 - 1; // 1, 3, 5
       Serial.print(myControl._eSockets[i].delta_off);
-      if (myControl._eSockets[i].delta_off == 0) Serial.println("SENT MSG OFF");
+      if (myControl._eSockets[i].delta_off == 0) action = i*2;    // 2, 4, 6
+    }
+
+    switch(action) {
+      case 1:
+        Serial.println("LED#1 ON");
+        mySwitch.send(1949669955, 32);
+      case 2: 
+        Serial.println("LED#1 OFF");
+        mySwitch.send(1949672782, 32);
+      case 3:
+        Serial.println("LED#2 ON");
+        mySwitch.send(1949668413, 32);
+      case 4:
+        Serial.println("LED#2 OFF");
+        mySwitch.send(1949674324, 32); 
+      case 5:
+        Serial.println("Fan ON");
+        mySwitch.send(1949670469, 32);
+      case 6:
+        Serial.println("Fan OFF");
+        mySwitch.send(1949672268, 32);
+      default:
+        Serial.println("SENT NO TX");
     }
   }
-
   //myKeypad.senseTouch();
 }
 
+/* The BN-LINK rf devices use protocol no. 2 and bit-length 32 for communication.
+   The remote for 3 on/off controls maps to the following codes:
+   - 1 - ON  1949669955
+   - 1 - OFF 1949672782
+   - 2 - ON  1949668413
+   - 2 - OFF 1949674324
+   - 3 - ON  1949670469
+   - 3 - OFF 1949672268
+*/

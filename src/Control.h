@@ -9,7 +9,7 @@
 #include <RCSwitch.h>
 
 #define CONFIG_JSON "[{'ID':1,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949670469,'code_OFF':1949672268}]"
-#define NUMBER_OF_ESOCKETS   3
+#define NUMBER_OF_ESOCKETS 3
 
 struct eSocket {
     int  ID;

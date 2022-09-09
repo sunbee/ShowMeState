@@ -1,23 +1,19 @@
 #include <Arduino.h>
-#include <SPI.h>
-#include <TFT_eSPI.h>
-
-#include <NTPClient.h>
-#include <ESP8266WiFi.h>
-#include <WiFiUdp.h>
-
 #include <time.h>
+#include "LittleFS.h"
 
+#include <ESP8266WiFi.h>
 #include "config.h"
-
 const char* ssid = SSID;
 const char* pass = PASS;
 
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 WiFiUDP NTP_UDP;
 NTPClient timeClient(NTP_UDP, "pool.ntp.org");
 
-#include "LittleFS.h"
-
+#include <SPI.h>
+#include <TFT_eSPI.h>
 TFT_eSPI _tft = TFT_eSPI();
 
 #include "Keypad.h"
@@ -32,9 +28,7 @@ double delta2_ON;
 double delta2_OFF;
 
 struct tm t_now = {0};
-
 int time_target = millis() + 1000;
-
 bool first = true;
 
 void setup() {

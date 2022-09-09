@@ -103,7 +103,7 @@ void setup() {
 void loop() {  
   short int task_target;      // Socket ID, -1 for SELECT NO SOCKET
   bool      task;             // Tx code ON if true, OFF if false
-  String log_record;  
+  String    log_record;       // Log record 
   
   // Update and publish the plan every second
   if (millis() > time_target) {

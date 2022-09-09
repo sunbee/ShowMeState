@@ -63,3 +63,13 @@ class Control {
 * update every second in main's loop or 
 * when current time is reset.
 */
+
+/* The BN-LINK rf devices use protocol no. 2 and bit-length 32 for communication.
+   The remote for 3 on/off controls maps to the following codes:
+   - 1 - ON  1949669955
+   - 1 - OFF 1949672782
+   - 2 - ON  1949668413
+   - 2 - OFF 1949674324
+   - 3 - ON  1949670469
+   - 3 - OFF 1949672268
+*/

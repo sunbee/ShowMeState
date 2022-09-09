@@ -142,13 +142,3 @@ void loop() {
   delay(10);  // 100 ms = 10x redundancy, i.e. on/off signal sent 10 times every planning cycle.
   //myKeypad.senseTouch();
 }
-
-/* The BN-LINK rf devices use protocol no. 2 and bit-length 32 for communication.
-   The remote for 3 on/off controls maps to the following codes:
-   - 1 - ON  1949669955
-   - 1 - OFF 1949672782
-   - 2 - ON  1949668413
-   - 2 - OFF 1949674324
-   - 3 - ON  1949670469
-   - 3 - OFF 1949672268
-*/

@@ -129,10 +129,10 @@ void loop() {
     Serial.println (log_record);
   }
 
-  // Execute with redundancy controlled  by delay
+  // Execute redundantly with repetition controlled by a small delay
   if (task_target > 0) {
     myControl.executeTask(task_target, task);
   }
-  delay(10);  // 100 ms = 10x redundancy, i.e. on/off signal sent 10 times every planning cycle.
+  delay(10);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
   //myKeypad.senseTouch();
 }

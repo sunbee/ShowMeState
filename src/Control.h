@@ -8,15 +8,15 @@
 
 #include <RCSwitch.h>
 
-#define CONFIG_JSON "[{'ID':1,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'06:30','t_OFF':'12:00','code_ON':1949670469,'code_OFF':1949672268}]"
+#define CONFIG_JSON "[{'ID':1,'t_ON':'23:45','t_OFF':'23:46','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'23:45:30','t_OFF':'23:46:30','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'17:30','t_OFF':'21:00','code_ON':1949670469,'code_OFF':1949672268}]"
 #define NUMBER_OF_ESOCKETS 3
 
 struct eSocket {
     int  ID;
     struct tm t_ON              = {0};      // Timestamp for switching outlet ON..
     struct tm t_OFF             = {0};      // and OFF
-    double delta_on             = -1;       // Time (secs) to event,
-    double delta_off            = -1;       // 
+    double delta_on             = -1;       // Time (secs) to event, tx ON..
+    double delta_off            = -1;       // and OFF 
     long int code_ON;    
     long int code_OFF;
 };
@@ -28,7 +28,9 @@ class Control {
         void advanceCursor1s();
         void executeTask(int, bool);        
         struct eSocket _eSockets[NUMBER_OF_ESOCKETS];
+        bool is_midnight();
     private:
+        double delta_midnight; 
         RCSwitch _switch = RCSwitch();
 };
 

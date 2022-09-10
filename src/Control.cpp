@@ -30,12 +30,19 @@ Control::Control() {
         * pick any reference date for year, month and day.
         * Gurudev's b'day is 05/13/1956. Use it.
         */
+        const char* t_ON = configDOC[i]["t_ON"];
+        const char* t_OFF = configDOC[i]["t_OFF"];
+       
+        strptime(t_ON, "%H:%M:%S", &_eSocket.t_ON);
+        strptime(t_OFF, "%H:%M:%S", &_eSocket.t_OFF);
+
         _eSocket.t_ON.tm_year   = 56;
         _eSocket.t_ON.tm_mon    = 4;
         _eSocket.t_ON.tm_mday   = 13;
         _eSocket.t_OFF.tm_year  = 56;
         _eSocket.t_OFF.tm_mon   = 4;
         _eSocket.t_OFF.tm_mday  = 13;
+
         _eSocket.code_ON        = configDOC[i]["code_ON"];
         _eSocket.code_OFF       = configDOC[i]["code_OFF"];
         this->_eSockets[i] = _eSocket;
@@ -43,15 +50,31 @@ Control::Control() {
 }
 
 void Control::initialize_deltas(struct tm t_now) {
-    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
-        time_t raw_t_now = mktime(&t_now);
+    time_t raw_t_now = mktime(&t_now);
 
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
         time_t raw_t_ON     = mktime(&(this->_eSockets[i].t_ON)); 
         time_t raw_t_OFF    = mktime(&(this->_eSockets[i].t_OFF));
         
         this->_eSockets[i].delta_on     = difftime(raw_t_ON, raw_t_now);
         this->_eSockets[i].delta_off    = difftime(raw_t_OFF, raw_t_now);
     }
+
+    struct tm midnight_minus_one; // 23:59:59 is 1 sec to midnight
+    midnight_minus_one.tm_year   = 56;
+    midnight_minus_one.tm_mon    = 4;
+    midnight_minus_one.tm_mday   = 13;
+    midnight_minus_one.tm_hour   = 23;
+    midnight_minus_one.tm_min    = 59;
+    midnight_minus_one.tm_sec    = 59;
+    
+    time_t raw_midnight_minus_one = mktime(&midnight_minus_one);
+
+    this->delta_midnight = difftime(raw_midnight_minus_one, raw_t_now) + 1; // Add 1 sec
+};
+
+bool Control::is_midnight() {
+    return this->delta_midnight == 0;
 };
 
 void Control::advanceCursor1s() {
@@ -59,6 +82,8 @@ void Control::advanceCursor1s() {
         this->_eSockets[i].delta_on     -= 1;
         this->_eSockets[i].delta_off    -= 1;
     }
+
+    this->delta_midnight -= 1;
 }
 
 void Control::executeTask(int ID, bool ON) {

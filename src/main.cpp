@@ -31,6 +31,8 @@ struct tm t_now = {0};
 int time_target = millis() + 1000;
 bool first = true;
 
+void reset_cursor();
+
 void setup() {
   // put your setup code here, to run once:
     // Use serial port
@@ -66,51 +68,11 @@ void setup() {
   // myKeypad.drawKeypad();
 
   // Draw clock
-  timeClient.update();
-  Serial.println(timeClient.getFormattedTime());
-  t_now.tm_year   = 56;
-  t_now.tm_mon    = 4;
-  t_now.tm_mday   = 13;
-  t_now.tm_hour   = timeClient.getHours();
-  t_now.tm_min    = timeClient.getMinutes();
-  t_now.tm_sec    = timeClient.getSeconds();
-
   myClock.drawClock();
-  myClock.set_hh(t_now.tm_hour);
-  myClock.set_mm(t_now.tm_min);
-  myClock.set_ss(t_now.tm_sec);
-  myClock.showTime();
-
-  // Test time - all eSockets have same on/off cycle
-  // TODO: Load settings from config.json to configure eSockets via class Control's constructor 
-  /*struct tm t_on = t_now;  
-  struct tm t_off = t_now;  
-  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-    t_on.tm_sec += (i+1)*10;
-    t_off.tm_sec += (i+1)*10 + 30;
-    myControl._eSockets[i].t_ON = t_on;
-    myControl._eSockets[i].t_OFF = t_off;
-  }*/
-  myControl.initialize_deltas(t_now);
-  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-    time_t tt_ON = mktime(&myControl._eSockets[i].t_ON);
-    Serial.println(ctime(&tt_ON));  
-    time_t tt_OFF = mktime(&myControl._eSockets[i].t_OFF);
-    Serial.println(ctime(&tt_OFF));
-    time_t tt_now = mktime(&t_now); 
-    Serial.println(ctime(&tt_now));
-    Serial.print("Switching ON in ");
-    Serial.println(myControl._eSockets[i].delta_on);
-    Serial.print("Switching OFF in ");
-    Serial.println(myControl._eSockets[i].delta_off);
-  }
+  
+  // Get the ball rolling
+  reset_cursor();
 }
-
-void reset_cursor() {
-  // Get new time
-  // Refresh clock
-  // Reset timer deltas 
-};
 
 void loop() {  
   short int task_target;      // Socket ID, -1 for SELECT NO SOCKET
@@ -141,12 +103,12 @@ void loop() {
     Serial.println (log_record);
 
     if (myControl.is_midnight() == true) {
+      delay(1000); // Give it one second 
       reset_cursor();
     }
 
-    if (millis() > 60*60*1000) {
+    if (millis() > 60*60*1000) { // Refresh at regular interval
       reset_cursor();
-
     }
   }
 
@@ -157,3 +119,31 @@ void loop() {
   delay(10);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
   //myKeypad.senseTouch();
 }
+
+void reset_cursor() {
+  // Get current time
+  timeClient.update();
+  Serial.println(timeClient.getFormattedTime());
+  t_now.tm_year   = 56;
+  t_now.tm_mon    = 4;
+  t_now.tm_mday   = 13;
+  t_now.tm_hour   = timeClient.getHours();
+  t_now.tm_min    = timeClient.getMinutes();
+  t_now.tm_sec    = timeClient.getSeconds();
+  
+  // Refresh displayed clock 
+  myClock.set_hh(t_now.tm_hour);
+  myClock.set_mm(t_now.tm_min);
+  myClock.set_ss(t_now.tm_sec);
+  myClock.showTime();
+
+  // Reset timer deltas 
+  myControl.initialize_deltas(t_now);
+  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+    time_t tt_ON = mktime(&myControl._eSockets[i].t_ON); Serial.print(ctime(&tt_ON));  
+    time_t tt_OFF = mktime(&myControl._eSockets[i].t_OFF); Serial.print(ctime(&tt_OFF));
+    time_t tt_now = mktime(&t_now); Serial.print(ctime(&tt_now));
+    Serial.print("Switching ON in "); Serial.println(myControl._eSockets[i].delta_on);
+    Serial.print("Switching OFF in "); Serial.println(myControl._eSockets[i].delta_off);
+  }
+};

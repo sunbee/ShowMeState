@@ -10,9 +10,9 @@
 /*
 * Paramters for LCD display
 */
-#define LCD_DISPLAY_X      1
-#define LCD_DISPLAY_Y      250
-#define LCD_DISPLAY_WIDTH  238
+#define LCD_DISPLAY_X      80
+#define LCD_DISPLAY_Y      172
+#define LCD_DISPLAY_WIDTH  160
 #define LCD_DISPLAY_HEIGHT 68
 #define LCD_DISPLAY_FONT   7
 #define LCD_DISPLAY_COLOR  TFT_ORANGE

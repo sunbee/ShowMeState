@@ -141,9 +141,13 @@ void AnalogClock::renderHands(bool erase=false) {
     * and erase the vacant part of the display after the string
     * by drawing a black rectangle. Thus avoid flicker arising
     * from repeated draw-erase cycles over the whole display area.
+    * Prepare to display time like so:
+    * char HMS[9];
+    * snprintf(HMS, 9, "%02d:%02d:%02d", hh, mm, ss);
     */
     char HMS[9];
-    snprintf(HMS, 9, "%02d:%02d:%02d", hh, mm, ss);
+    snprintf(HMS, 9, "%02d:%02d", hh, mm);
+    (*this->_tft).setTextColor(TFT_RED, TFT_BLACK);
     int HMS_width = (*this->_tft).drawString(HMS, LCD_DISPLAY_X+4, LCD_DISPLAY_Y+10, 7);
     (*this->_tft).fillRect(LCD_DISPLAY_X+4+HMS_width, LCD_DISPLAY_Y+10, LCD_DISPLAY_WIDTH-5-HMS_width, LCD_DISPLAY_HEIGHT-12, TFT_BLACK);
     /*

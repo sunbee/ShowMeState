@@ -56,18 +56,22 @@ void setup() {
   myClock.init(&_tft);
 
   // Set the rotation before we calibrate
-  // _tft.setRotation(1);
+  _tft.setRotation(1);
 
   // Clear the screen
   _tft.fillScreen(TFT_BLACK);
 
   // Calibrate the touch screen and retrieve the scaling factors
-  // myKeypad.touchCalibrate();
+  myKeypad.touchCalibrate();
 
   // Draw keypad
-  // myKeypad.drawKeypad();
+  myKeypad.drawKeypad();
+  myKeypad.set_control(&myControl);
 
   // Draw clock
+  myClock.set_x0(160);
+  myClock.set_y0(90);
+  myClock.set_radius(90);
   myClock.drawClock();
   
   // Get the ball rolling
@@ -117,7 +121,7 @@ void loop() {
     myControl.executeTask(task_target, task);
   }
   delay(10);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
-  //myKeypad.senseTouch();
+  myKeypad.senseTouch();
 }
 
 void reset_cursor() {

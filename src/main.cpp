@@ -116,7 +116,7 @@ void loop() {
   if (task_target > 0) {
     myControl.executeTask(task_target, task);
   }
-  delay(10);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
+  delay(100);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
   //myKeypad.senseTouch();
 }
 

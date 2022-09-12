@@ -8,7 +8,7 @@
 
 #include <RCSwitch.h>
 
-#define CONFIG_JSON "[{'ID':1,'t_ON':'11:28','t_OFF':'11:29','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'11:28:30','t_OFF':11:29:30','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'17:30','t_OFF':'21:00','code_ON':1949670469,'code_OFF':1949672268}]"
+#define CONFIG_JSON "[{'ID':1,'t_ON':'12:10','t_OFF':'12:11','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'12:10:30','t_OFF':'12:11:30','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'12:12','t_OFF':'12:15','code_ON':1949670469,'code_OFF':1949672268}]"
 #define NUMBER_OF_ESOCKETS 3
 
 struct eSocket {

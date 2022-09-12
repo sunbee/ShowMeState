@@ -3,7 +3,7 @@
 *rev002*: Package the code that enables keypad into a function.
 *rev003*: Create class Keypad with methods for drawing/calibration/sensing keypad.
 *rev004*: Add a new class for analog clock.
-*rev005*: Add a class Timer for controlling outlets and operate p
+*rev005*: Add a class Timer for controlling outlets and operate power outlets.
 *rev006*: Combine analong clock and keypad in display main.
 *rev007*: Add feature to obtain local time from the internet.
 

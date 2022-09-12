@@ -31,10 +31,6 @@ void Keypad::drawKeypad() {
   
       (*this->_tft).setFreeFont(LABEL3_FONT);
 
-      /* key[b].initButton(this->_tft, KEY_X + col * (KEY_W + KEY_SPACING_X),
-                        KEY_Y + row * (KEY_H + KEY_SPACING_Y), // x, y, w, h, outline, fill, text
-                        KEY_W, KEY_H, TFT_WHITE, TFT_BLUE, TFT_WHITE,
-                        keyLabel[b], KEY_TEXTSIZE); */
       key[b].initButton(this->_tft, KEY_X + col * (KEY_SPACING_X),
                       KEY_Y + row * (KEY_SPACING_Y), // x, y, w, h, outline, fill, text
                       KEY_W, KEY_H, TFT_WHITE, TFT_BLUE, TFT_WHITE,

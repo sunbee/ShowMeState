@@ -8,3 +8,18 @@
 *rev007*: Add feature to obtain local time from the internet.
 
 Ref: [gist](https://gist.github.com/sunbee/68fbf68458fda3a0b3dc803c2ee610a9) with an explanation of functions for drawing, calibration and sensing keypad. 
+
+STEPS:
+1. Display keypad. BUT it doesn't sense touch!
+2. Add touch-sense feature and calibration routine. BUT main is ~300 lines and hard to extend.
+3. Refactor to OOP. Create class Keypad with design attributes (fonts, shapes, layout) and methods to render graphics, sense touch and execute callbacks. BUT we need clock too, for timed events.
+4. Create class for analog clock, sync'ing to internet time. BUT no action (yet!)
+5. Create class Timer for burning-down time interval to scheduled events and executing callbacks. 
+6. Rewrite classes for analog clock and keypad for cohesive display and enable override.
+7. Clean up!
+
+Short-Shorts
+1. Clock .. Render the following (1.) Face - Draw/Erase trick (2.) Ticks - Coordinate Transform (3.) Hands - Draw/Erase
+2. Millis and non-blocking
+3. Object Oriented Code - Class examples keypad, analog clock
+4. Timer - burning down (1.) Gantt chart w cursor (2.)  

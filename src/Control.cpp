@@ -8,7 +8,7 @@ Control::Control() {
     this->_switch.setRepeatTransmit(3);  // Number of tx repetitions (optional)
 
     char configJSON[] = CONFIG_JSON;
-    StaticJsonDocument<256> configDOC;
+    StaticJsonDocument<384> configDOC;
     DeserializationError err = deserializeJson(configDOC, configJSON);
     /*
     * TODO 

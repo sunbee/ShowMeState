@@ -105,13 +105,13 @@ void AnalogClock::renderHands(bool erase=false) {
         ss = this->_ss_tminus1;
     }
 
-    float ssdeg = ss*6 - 90;
-    float mmdeg = mm*6 + ssdeg*(6.0/360) - 90;
-    float hhdeg = hh*30 + mmdeg*(30.0/360) - 90;
+    float ssdeg = ss*6;
+    float mmdeg = mm*6 + ss*(6.0/60);
+    float hhdeg = hh*30 + mm*(30.0/60);
 
-    float ssrad = ssdeg * 0.0174532925;
-    float mmrad = mmdeg * 0.0174532925;
-    float hhrad = hhdeg * 0.0174532925;
+    float ssrad = (ssdeg - 90) * 0.0174532925;
+    float mmrad = (mmdeg - 90) * 0.0174532925;
+    float hhrad = (hhdeg - 90) * 0.0174532925;
 
     float hhradius = this->_radius * 0.6;
     float mmradius = this->_radius * 0.75;

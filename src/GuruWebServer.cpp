@@ -95,6 +95,16 @@ bool GuruWebServer::initializeWiFi() {
     * Make WiFi connection when SSID and PWD are available
     * and set up station for web-service.
     */
+    // Check
+    this->initializeaLittle();
+
+    // Connect to WiFi
+    this->readaLittle(&SSID, Path2_SSID); 
+    this->readaLittle(&PWD, Path2_PWD);
+    this->readaLittle(&IP, Path2_IP);
+    this->readaLittle(&Gateway, Path2_Gateway);
+    String conn_ack = (String)"SSID <" + SSID + "> | PWD <" + PWD + "> | IP <" + IP + "> | Gateway <" + Gateway + ">";
+
     if (SSID == "" || PWD == "") {  // Files not populated!
         Serial.println("Found NO SSID or PWD!");
         return false;
@@ -108,28 +118,24 @@ bool GuruWebServer::initializeWiFi() {
         Serial.println("Configured NO station!");
         return false;
     }
-
-    String conn_ack = (String)"SSID <" + SSID + "> | PWD <" + PWD + ">";
-    Serial.println(conn_ack);
     WiFi.begin(SSID, PWD);
 
-    unsigned long now   = millis();
-    unsigned long then  = now;      // Marker for ticker
-    unsigned long stop  = now;      // Marker for ATTEMPT NO FURTHER
+    unsigned long _now   = millis();
+    unsigned long _then  = _now;      // Marker for ticker
+    unsigned long _stop  = _now;      // Marker for ATTEMPT NO FURTHER
     unsigned long delta_minor = 0;  // Time since last tick
     unsigned long delta_major = 0;  // Time since start
-
     while (WiFi.status() != WL_CONNECTED) { 
-        now = millis();
-        delta_minor = now - then;   // Time since last tick
-        delta_major = now - stop;   // Time since start
+        _now = millis();
+        delta_minor = _now - _then;   // Time since last tick
+        delta_major = _now - _stop;   // Time since start
 
         if (delta_minor > 1000) {   // Mark time and reset delta
-            then = now;
+            _then = _now;
             Serial.print (".");
         }
         if (delta_major > 60000) {  // Stop attempting connection
-            String timely = (String)"Now " + now + " Stop " + stop + " Diff " + delta_major;
+            String timely = (String)"Now " + _now + " Stop " + _stop + " Diff " + delta_major;
             Serial.println(timely);
             Serial.println("Made NO WiFi connection!");
             return false;           // Exit false
@@ -141,16 +147,6 @@ bool GuruWebServer::initializeWiFi() {
 }
 
 void GuruWebServer::serveWWW() {
-    // Check
-    this->initializeaLittle();
-
-    // Connect to WiFi
-    this->readaLittle(&SSID, Path2_SSID); 
-    this->readaLittle(&PWD, Path2_PWD);
-    this->readaLittle(&IP, Path2_IP);
-    this->readaLittle(&Gateway, Path2_Gateway);
-    String conn_ack = (String)"SSID <" + SSID + "> | PWD <" + PWD + "> | IP <" + IP + "> | Gateway <" + Gateway + ">";
-
     if (this->initializeWiFi()) {
         /*
         * Serve the UI for configuring home automation settings.
@@ -158,6 +154,8 @@ void GuruWebServer::serveWWW() {
         server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
             request->send(200, "Howdy UNIVERSE!", "text/html");
         });
+
+        server.serveStatic("/", LittleFS, "/");
 
         server.begin();
     } else {

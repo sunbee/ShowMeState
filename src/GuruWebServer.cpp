@@ -121,14 +121,14 @@ bool GuruWebServer::initializeWiFi() {
     WiFi.begin(SSID, PWD);
 
     unsigned long _now   = millis();
-    unsigned long _then  = _now;      // Marker for ticker
-    unsigned long _stop  = _now;      // Marker for ATTEMPT NO FURTHER
+    unsigned long _then  = _now;    // Marker for ticker
+    unsigned long _stop  = _now;    // Marker for ATTEMPT NO FURTHER
     unsigned long delta_minor = 0;  // Time since last tick
     unsigned long delta_major = 0;  // Time since start
     while (WiFi.status() != WL_CONNECTED) { 
         _now = millis();
-        delta_minor = _now - _then;   // Time since last tick
-        delta_major = _now - _stop;   // Time since start
+        delta_minor = _now - _then; // Time since last tick
+        delta_major = _now - _stop; // Time since start
 
         if (delta_minor > 1000) {   // Mark time and reset delta
             _then = _now;
@@ -152,10 +152,10 @@ void GuruWebServer::serveWWW() {
         * Serve the UI for configuring home automation settings.
         */
         server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-            request->send(200, "Howdy UNIVERSE!", "text/html");
+            request->send(200, "text/html", "Howdy UNIVERSE!");
         });
 
-        server.serveStatic("/", LittleFS, "/");
+        //server.serveStatic("/", LittleFS, "/");
 
         server.begin();
     } else {

@@ -6,11 +6,11 @@
 #include "GuruWebServer.h"
 GuruWebServer _WWW;
 
-/*#include <NTPClient.h>
+#include <NTPClient.h>
 #include <WiFiUdp.h>
 WiFiUDP NTP_UDP;
-NTPClient timeClient(NTP_UDP, "us.pool.ntp.org");
-*/
+NTPClient timeClient(NTP_UDP, "pool.ntp.org");
+// Alt.
 #define LOCAL_NTP_SERVER "pool.ntp.org"
 #define LOCAL_TZ  "CST6CDT,M3.2.0,M11.1.0" // https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
 time_t now;
@@ -41,15 +41,14 @@ void setup() {
   // Use serial port
   Serial.begin(9600);
 
-  _WWW.initializeWiFi();
-  //_WWW.serveWWW();
+  // Set up web-server
+  _WWW.serveWWW();
 
   // Connect to  the NTP client
-  delay(500);
-  /*
+  delay(3000);
   timeClient.begin();
   timeClient.setTimeOffset(-18000); // Central time GMT-5 ~ -5 x 3600 
-  */
+  
   // Initialise the TFT screen
   _tft.init();
   myKeypad.init(&_tft);
@@ -59,7 +58,7 @@ void setup() {
   _tft.setRotation(1);
 
   // Clear the screen
-  _tft.fillScreen(TFT_DARKCYAN);
+  _tft.fillScreen(TFT_PINK);
 
   // Calibrate the touch screen and retrieve the scaling factors
   myKeypad.touchCalibrate();
@@ -125,8 +124,7 @@ void loop() {
   myKeypad.senseTouch();
 }
 
-/*
-void reset_cursor_DEPRECATED() {
+void reset_cursor() {
   // Get current time
   timeClient.update();
   Serial.println(timeClient.getFormattedTime());
@@ -153,17 +151,16 @@ void reset_cursor_DEPRECATED() {
     Serial.print("Switching OFF in "); Serial.println(myControl._eSockets[i].delta_off);
   }
 };
-*/
 
-void reset_cursor() {
+void reset_cursor_() {
   // Get current time
-  configTime(0, 0, "pool.ntp.org");
-  setenv("TZ", "CST6CDT,M3.2.0,M11.1.0", 1);
+  configTime(LOCAL_TZ, 0, LOCAL_NTP_SERVER);
 
   Serial.print("Getting time");
   while (now < 1546300800) {
+    Serial.print(now);
     now = time(nullptr);
-    delay(250);
+    delay(500);
     Serial.print(".");
   } // 1546300800 =  01/01/2019 @ 12:00am (UTC))
   Serial.println("Done!");

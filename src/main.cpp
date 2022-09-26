@@ -75,7 +75,11 @@ void setup() {
   
   // Get the ball rolling
   delay(3000);
-  reset_cursor();
+  timeClient.update();
+  delay(3000);
+  timeClient.update();
+  Serial.println(timeClient.getFormattedTime());
+  //reset_cursor();
 }
 
 void loop() {  

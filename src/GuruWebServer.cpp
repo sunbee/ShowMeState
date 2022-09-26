@@ -22,7 +22,7 @@ const char* Path2_Dummy     = "/dummy";
 // WiFi Configuration Settings
 IPAddress localIP;        //IPAddress localIP(192, 168, 1, 200); // hardcoded
 IPAddress localGateway;   //IPAddress localGateway(192, 168, 1, 1); //hardcoded
-IPAddress subnet(255, 255, 0, 0);
+IPAddress subnet(255, 255, 255, 0);
 
 GuruWebServer::GuruWebServer(/* args */) {
 
@@ -155,7 +155,7 @@ void GuruWebServer::serveWWW() {
             request->send(200, "text/html", "Howdy UNIVERSE!");
         });
 
-        //server.serveStatic("/", LittleFS, "/");
+        server.serveStatic("/", LittleFS, "/");
 
         server.begin();
     } else {
@@ -212,9 +212,8 @@ void GuruWebServer::serveWWW() {
             }                   // end FOR
             request->send(200, "text/plain", "Done! Will restart and make WiFi connection. Go to IP address: " + IP);
             delay(3000);
-            ESP.reset();
-            delay(3000);
-        });                     // end ON HTTP POST
+            ESP.restart();
+        });                     // end ON HTTP POST request
         server.begin();
     }                           // end IF WiFi initialized
 } // end Fn

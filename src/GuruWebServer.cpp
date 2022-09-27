@@ -23,6 +23,15 @@ const char* Path2_Dummy     = "/dummy";
 IPAddress localIP;        //IPAddress localIP(192, 168, 1, 200); // hardcoded
 IPAddress localGateway;   //IPAddress localGateway(192, 168, 1, 1); //hardcoded
 IPAddress subnet(255, 255, 255, 0);
+IPAddress DNS(1, 1, 1, 1);
+
+// Get config. JSON
+String i1ON     = "input_1ON";
+String i1OFF    = "input_1OFF";
+String i2ON     = "input_2ON";
+String i2OFF    = "input_2OFF";
+String i3ON     = "input_3ON";
+String i3OFF    = "input_3OFF";
 
 GuruWebServer::GuruWebServer(/* args */) {
 
@@ -157,6 +166,16 @@ void GuruWebServer::serveWWW() {
             request->send(LittleFS, "./scheduler.html", "text/html");
         });
 
+        server.on("/schedule", HTTP_POST, [](AsyncWebServerRequest* request) {
+            // Process
+            if (request->hasParam(i1ON)) {
+                Serial.print(request->getParam(i1ON)->name());
+                Serial.println(request->getParam(i1ON)->value());
+            }
+            request->send(LittleFS, "./scheduler.html", "text/html");
+
+        });
+
         server.serveStatic("/", LittleFS, "/");
 
         server.begin();
@@ -170,7 +189,7 @@ void GuruWebServer::serveWWW() {
         IPAddress WAP_IP = WiFi.softAPIP();
         Serial.print("Got IP address as: ");
         Serial.println(WAP_IP);
-        server.on("/timetable", HTTP_GET, [](AsyncWebServerRequest* request) {
+        server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
             request->send(LittleFS, "./wifimanager.html", "text/html");
         });
 

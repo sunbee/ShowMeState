@@ -234,7 +234,7 @@ void GuruWebServer::serveWWW() {
                     }           // end IF name()
                 }               // end IF isPost()
             }                   // end FOR
-            request->send(200, "text/plain", "Done! Will restart and make WiFi connection. Go to IP address: " + IP);
+            request->send(200, "text/html", "Done! Will restart and make WiFi connection. Go to IP address: " + IP);
             delay(3000);
             ESP.restart();
         });                     // end ON HTTP POST request

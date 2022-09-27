@@ -1,0 +1,38 @@
+<!DOCTYPE HTML><html>
+<head>
+    <title>SYSTEM SCHEDULER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html {font-family: Times New Roman; display: inline-block; text-align: center;}
+        h2 {font-size: 3.0rem; color: #FF0000;}
+        input {text-align: right; width: 25%;"}
+    </style>
+</head>
+<body>
+    <div class="topnav"><h1>NODEMCU HMI</h1></div>
+    <div class="content">
+    <div class="card-grid">
+        <div class="card">
+            <p class="card-title"><i class="fas fa-lightbulb"></i>TIME-TABLE</p>
+            <p>       
+            <form action="/get">
+                1ON: (%_1ON%)<input type="text" name="input_1ON">
+                1OFF: (%_1OFF%)<input type="text" name="input_1OFF">
+                <input type="submit" value="Submit">
+            </form><br>
+            <form action="/get">
+                2ON: (%_2ON%)<input type="text" name="input_2ON">
+                2OFF: (%_2OFF%)<input type="text" name="input_2OFF">
+                <input type="submit" value="Submit">
+            </form><br>
+            <form action="/get">
+                3ON: (%_3ON%)<input type="text" name="input_3ON">
+                3OFF: (%_3OFF%)<input type="text" name="input_3OFF">
+                <input type="submit" value="Submit">
+            </form><br>
+            </p>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

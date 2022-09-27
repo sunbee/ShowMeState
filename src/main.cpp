@@ -10,10 +10,6 @@ GuruWebServer _WWW;
 #include <WiFiUdp.h>
 WiFiUDP NTP_UDP;
 NTPClient timeClient(NTP_UDP, "pool.ntp.org");
-// Alt.
-#define LOCAL_NTP_SERVER "pool.ntp.org"
-#define LOCAL_TZ  "CST6CDT,M3.2.0,M11.1.0" // https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
-time_t now;
 
 #include <SPI.h>
 #include <TFT_eSPI.h>
@@ -74,12 +70,10 @@ void setup() {
   myClock.drawClock();
   
   // Get the ball rolling
-  delay(3000);
-  timeClient.update();
-  delay(3000);
+  delay(250);
   timeClient.update();
   Serial.println(timeClient.getFormattedTime());
-  //reset_cursor();
+  reset_cursor();
 }
 
 void loop() {  
@@ -139,38 +133,6 @@ void reset_cursor() {
   t_now.tm_min    = timeClient.getMinutes();
   t_now.tm_sec    = timeClient.getSeconds();
   
-  // Refresh displayed clock 
-  myClock.set_hh(t_now.tm_hour);
-  myClock.set_mm(t_now.tm_min);
-  myClock.set_ss(t_now.tm_sec);
-  myClock.showTime();
-
-  // Reset timer deltas 
-  myControl.initialize_deltas(t_now);
-  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-    time_t tt_ON = mktime(&myControl._eSockets[i].t_ON); Serial.print(ctime(&tt_ON));  
-    time_t tt_OFF = mktime(&myControl._eSockets[i].t_OFF); Serial.print(ctime(&tt_OFF));
-    time_t tt_now = mktime(&t_now); Serial.print(ctime(&tt_now));
-    Serial.print("Switching ON in "); Serial.println(myControl._eSockets[i].delta_on);
-    Serial.print("Switching OFF in "); Serial.println(myControl._eSockets[i].delta_off);
-  }
-};
-
-void reset_cursor_() {
-  // Get current time
-  configTime(LOCAL_TZ, 0, LOCAL_NTP_SERVER);
-
-  Serial.print("Getting time");
-  while (now < 1546300800) {
-    Serial.print(now);
-    now = time(nullptr);
-    delay(500);
-    Serial.print(".");
-  } // 1546300800 =  01/01/2019 @ 12:00am (UTC))
-  Serial.println("Done!");
-
-  t_now = *localtime(&now);
-
   // Refresh displayed clock 
   myClock.set_hh(t_now.tm_hour);
   myClock.set_mm(t_now.tm_min);

@@ -111,6 +111,7 @@ bool GuruWebServer::initializeWiFi() {
     }
 
     WiFi.mode(WIFI_STA);
+    /* Configure no IP address!
     localIP.fromString(IP.c_str());
     localGateway.fromString(Gateway.c_str());
 
@@ -118,6 +119,7 @@ bool GuruWebServer::initializeWiFi() {
         Serial.println("Configured NO station!");
         return false;
     }
+    */
     WiFi.begin(SSID, PWD);
 
     unsigned long _now   = millis();

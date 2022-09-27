@@ -154,7 +154,7 @@ void GuruWebServer::serveWWW() {
         * Serve the UI for configuring home automation settings.
         */
         server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-            request->send(200, "text/html", "Howdy UNIVERSE!");
+            request->send(LittleFS, "./scheduler.html", "text/html");
         });
 
         server.serveStatic("/", LittleFS, "/");
@@ -170,7 +170,7 @@ void GuruWebServer::serveWWW() {
         IPAddress WAP_IP = WiFi.softAPIP();
         Serial.print("Got IP address as: ");
         Serial.println(WAP_IP);
-        server.on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
+        server.on("/timetable", HTTP_GET, [](AsyncWebServerRequest* request) {
             request->send(LittleFS, "./wifimanager.html", "text/html");
         });
 

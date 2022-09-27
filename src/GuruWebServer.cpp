@@ -168,9 +168,12 @@ void GuruWebServer::serveWWW() {
 
         server.on("/schedule", HTTP_POST, [](AsyncWebServerRequest* request) {
             // Process
-            if (request->hasParam(i1ON)) {
-                Serial.print(request->getParam(i1ON)->name());
-                Serial.println(request->getParam(i1ON)->value());
+            if (request->hasParam(i1ON.c_str(), true)) {
+                Serial.print(request->getParam(i1ON, true)->name());
+                Serial.println(request->getParam(i1ON, true)->value());
+            } else {
+                Serial.print(request->getParam(i1ON, true)->name());
+                Serial.println(request->getParam(i1OFF, true)->value());
             }
             request->send(LittleFS, "./scheduler.html", "text/html");
 

@@ -8,7 +8,8 @@
 
 #include "CRUDaLittle.h"
 
-#define CONFIG_JSON "[{'ID':1,'t_ON':'11:28','t_OFF':'11:29','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'11:28:30','t_OFF':'11:29:30','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'17:30','t_OFF':'21:00','code_ON':1949670469,'code_OFF':1949672268}]"
+#define TEST_MODE true 
+#define CONFIG_JSON "[{'ID':1,'t_ON':'15:01','t_OFF':'15:02','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'15:01:30','t_OFF':'15:02:30','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'15:03','t_OFF':'15:05','code_ON':1949670469,'code_OFF':1949672268}]"
 #define NUMBER_OF_ESOCKETS 3
 
 struct eSocket {
@@ -19,19 +20,23 @@ struct eSocket {
     double delta_off            = -1;       // and OFF 
     long int code_ON;    
     long int code_OFF;
+    bool ready_ON               = false;    // Flag: time to switch ON
+    bool ready_OFF              = false;    // Flag: time to switch OFF
 };
 
 class Control {
     public:
         Control(CRUDaLittle*);
         void init();
-        void set_deltas(struct tm);
+        void set_deltas(struct tm*);
         void advanceCursor1s();
-        void executeTask(int, bool);        
-        struct eSocket _eSockets[NUMBER_OF_ESOCKETS];
+        void scan_sockets_and_flag();
+        void scan_sockets_and_execute();
+        void executeTask(int, bool);                
+        void scan_sockets_and_print_timetable(struct tm*);
+        String scan_sockets_and_log_record();
         bool is_midnight();
-        void print_timetable(struct tm);
-        String log_record();
+        struct eSocket _eSockets[NUMBER_OF_ESOCKETS];
     private:
         double delta_midnight; 
         RCSwitch _switch = RCSwitch();

@@ -33,7 +33,9 @@ struct tm t_now = {0};
 int time_target = millis() + 1000;
 bool first = true;
 
-void reset_cursor();
+void set_time_now(struct tm* t_now);
+void set_clock_time(struct tm* t_now);
+void set_timeline(struct tm* t_now);
 
 void setup() {
   // put your setup code here, to run once:
@@ -71,7 +73,7 @@ void setup() {
   Serial.println(timeClient.getFormattedTime());
 
   _control.init();
-  reset_cursor();
+  set_timeline(&t_now);
 }
 
 void loop() {  
@@ -83,61 +85,58 @@ void loop() {
   if (millis() > time_target) {
     task_target = -1;  // SELECT NO EL. SOCKET
     time_target += 1000;
+
     _clock.advanceTime1s();
     _control.advanceCursor1s();
-
-    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-      log_record += (String)"_ON_" + _control._eSockets[i].delta_on;
-      if (_control._eSockets[i].delta_on == 0) {
-        task_target = _control._eSockets[i].ID;
-        task = true;
-      }
-      log_record += (String) "_OFF_" + (_control._eSockets[i].delta_off);
-      if (_control._eSockets[i].delta_off == 0) {
-        task_target = _control._eSockets[i].ID;
-        task = false;
-      }
-    }
-    
-    if (task_target > 0) log_record += (String)"__Task ID " + task_target + "__Code " + (task ? "ON" : "OFF");
-    Serial.println (log_record);
+    _control.scan_sockets_and_flag();
+    Serial.println(_control.scan_sockets_and_log_record());
 
     if (_control.is_midnight() == true) {
       delay(1000); // Give it one second 
-      reset_cursor();
+      set_timeline(&t_now);
     }
 
     if (millis() > 60*60*1000) { // Refresh at regular interval
-      reset_cursor();
+      set_timeline(&t_now);
     }
   }
 
   // Execute redundantly with repetition controlled by a small delay
+  _control.scan_sockets_and_execute();
+  /* DEPRECATE!!!
   if (task_target > 0) {
     _control.executeTask(task_target, task);
   }
+  */
   delay(10);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
   _keypad.senseTouch();
 }
 
-void reset_cursor() {
+void set_time_now(struct tm* t_now) {
   // Get current time
   timeClient.update();
-  Serial.println(timeClient.getFormattedTime());
-  t_now.tm_year   = 56;
-  t_now.tm_mon    = 4;
-  t_now.tm_mday   = 13;
-  t_now.tm_hour   = timeClient.getHours();
-  t_now.tm_min    = timeClient.getMinutes();
-  t_now.tm_sec    = timeClient.getSeconds();
-  
-  // Refresh displayed clock 
-  _clock.set_hh(t_now.tm_hour);
-  _clock.set_mm(t_now.tm_min);
-  _clock.set_ss(t_now.tm_sec);
-  _clock.showTime();
+  Serial.println(timeClient.getFormattedTime());  
+  // Update arg passed by ref
+  t_now->tm_year   = 56;
+  t_now->tm_mon    = 4;
+  t_now->tm_mday   = 13;
+  t_now->tm_hour   = timeClient.getHours();
+  t_now->tm_min    = timeClient.getMinutes();
+  t_now->tm_sec    = timeClient.getSeconds();
+}
 
-  // Reset timer deltas 
+void set_clock_time(struct tm* t_now) {
+  // Set clock time 
+  _clock.set_hh(t_now->tm_hour);
+  _clock.set_mm(t_now->tm_min);
+  _clock.set_ss(t_now->tm_sec);
+  // Refresh display 
+  _clock.showTime();
+}
+
+void set_timeline(struct tm* t_now) {
+  set_time_now(t_now);
+  set_clock_time(t_now);  
   _control.set_deltas(t_now);
-  _control.print_timetable(t_now);
+  _control.scan_sockets_and_print_timetable(t_now);
 };

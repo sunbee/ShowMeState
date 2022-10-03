@@ -16,7 +16,7 @@ void Control::init() {
     Serial.print("Configured as: ");
     Serial.println(this->configJSON);
     StaticJsonDocument<512> configDOC;
-    DeserializationError err = deserializeJson(configDOC, this->configJSON.c_str());
+    DeserializationError err = deserializeJson(configDOC, TEST_MODE ? configJSON : this->configJSON.c_str());
  
     /* 
     * READ THE SETTINSG IN THE CONFIGURATION FILE AND APPLY
@@ -56,8 +56,8 @@ void Control::init() {
     }
 }
 
-void Control::set_deltas(struct tm t_now) {
-    time_t raw_t_now = mktime(&t_now);
+void Control::set_deltas(struct tm* t_now) {
+    time_t raw_t_now = mktime(t_now);
 
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
         time_t raw_t_ON     = mktime(&(this->_eSockets[i].t_ON)); 
@@ -101,31 +101,36 @@ void Control::executeTask(int ID, bool ON) {
     }
 }
 
-void Control::print_timetable(struct tm t_now) {
+void Control::scan_sockets_and_flag() {
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+        this->_eSockets[i].ready_ON = this->_eSockets[i].delta_on == 0 ? true : false;
+        this->_eSockets[i].ready_OFF = this->_eSockets[i].delta_off == 0? true : false;
+    }
+}
+
+void Control::scan_sockets_and_execute() {
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+        if (this->_eSockets[i].ready_ON)  { this->_switch.send(this->_eSockets[i].code_ON, 32); }
+        if (this->_eSockets[i].ready_OFF) { this->_switch.send(this->_eSockets[i].code_OFF, 32); }
+    }
+}
+
+void Control::scan_sockets_and_print_timetable(struct tm* t_now) {
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
         time_t tt_ON = mktime(&this->_eSockets[i].t_ON); Serial.print(ctime(&tt_ON));  
         time_t tt_OFF = mktime(&this->_eSockets[i].t_OFF); Serial.print(ctime(&tt_OFF));
-        time_t tt_now = mktime(&t_now); Serial.print(ctime(&tt_now));
+        time_t tt_now = mktime(t_now); Serial.print(ctime(&tt_now));
         Serial.print("Switching ON in "); Serial.println(this->_eSockets[i].delta_on);
         Serial.print("Switching OFF in "); Serial.println(this->_eSockets[i].delta_off);
     }
 }
 
-String Control::log_record() {
-    short int task_target;
-    bool task;
+String Control::scan_sockets_and_log_record() {
     String log_record;
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-        log_record += (String)"_ON_" + this->_eSockets[i].delta_on;
-        if (this->_eSockets[i].delta_on == 0) {
-            task_target = this->_eSockets[i].ID;
-            task = true;
-            }
-        log_record += (String) "_OFF_" + (this->_eSockets[i].delta_off);
-        if (this->_eSockets[i].delta_off == 0) {
-            task_target = this->_eSockets[i].ID;
-            task = false;
-        }
+        log_record += (String)this->_eSockets[i].ID + "ON_" + (long)this->_eSockets[i].delta_on + " ";
+        log_record += (String)this->_eSockets[i].ID + "OFF_" + (long)this->_eSockets[i].delta_off;
+        log_record += (i == NUMBER_OF_ESOCKETS-1) ? "" : " | ";
     }
     return log_record;
 }

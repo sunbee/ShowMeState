@@ -19,13 +19,13 @@ NTPClient timeClient(NTP_UDP, "pool.ntp.org");
 TFT_eSPI _tft = TFT_eSPI();
 
 #include "Keypad.h"
-Keypad myKeypad = Keypad();
+Keypad _keypad = Keypad();
 
 #include "AnalogClock.h"
-AnalogClock myClock = AnalogClock();
+AnalogClock _clock = AnalogClock();
 
 #include "Control.h"
-Control myControl = Control(&_littleCRUD);
+Control _control = Control(&_littleCRUD);
 double delta2_ON;
 double delta2_OFF;
 
@@ -39,7 +39,7 @@ void setup() {
   // put your setup code here, to run once:
   // Use serial port
   Serial.begin(9600);
-
+  
   // Set up web-server
   _WWW.serveWWW();
 
@@ -54,22 +54,23 @@ void setup() {
   _tft.fillScreen(TFT_PINK);    // Clear the screen
 
   // Draw keypad
-  myKeypad.init(&_tft);
-  myKeypad.touchCalibrate();    // Calibrate the touch screen and retrieve the scaling factors
-  myKeypad.drawKeypad();
-  myKeypad.set_control(&myControl);
+  _keypad.init(&_tft);
+  _keypad.touchCalibrate();    // Calibrate the touch screen and retrieve the scaling factors
+  _keypad.drawKeypad();
+  _keypad.set_control(&_control);
 
   // Draw clock
-  myClock.init(&_tft);
-  myClock.set_x0(160);
-  myClock.set_y0(90);
-  myClock.set_radius(90);
-  myClock.drawClock();
+  _clock.init(&_tft);
+  _clock.set_x0(160);
+  _clock.set_y0(90);
+  _clock.set_radius(90);
+  _clock.drawClock();
   
   // Get the ball rolling
-  delay(250);
   timeClient.update();
   Serial.println(timeClient.getFormattedTime());
+
+  _control.init();
   reset_cursor();
 }
 
@@ -82,18 +83,18 @@ void loop() {
   if (millis() > time_target) {
     task_target = -1;  // SELECT NO EL. SOCKET
     time_target += 1000;
-    myClock.advanceTime1s();
-    myControl.advanceCursor1s();
+    _clock.advanceTime1s();
+    _control.advanceCursor1s();
 
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-      log_record += (String)"_ON_" + myControl._eSockets[i].delta_on;
-      if (myControl._eSockets[i].delta_on == 0) {
-        task_target = myControl._eSockets[i].ID;
+      log_record += (String)"_ON_" + _control._eSockets[i].delta_on;
+      if (_control._eSockets[i].delta_on == 0) {
+        task_target = _control._eSockets[i].ID;
         task = true;
       }
-      log_record += (String) "_OFF_" + (myControl._eSockets[i].delta_off);
-      if (myControl._eSockets[i].delta_off == 0) {
-        task_target = myControl._eSockets[i].ID;
+      log_record += (String) "_OFF_" + (_control._eSockets[i].delta_off);
+      if (_control._eSockets[i].delta_off == 0) {
+        task_target = _control._eSockets[i].ID;
         task = false;
       }
     }
@@ -101,7 +102,7 @@ void loop() {
     if (task_target > 0) log_record += (String)"__Task ID " + task_target + "__Code " + (task ? "ON" : "OFF");
     Serial.println (log_record);
 
-    if (myControl.is_midnight() == true) {
+    if (_control.is_midnight() == true) {
       delay(1000); // Give it one second 
       reset_cursor();
     }
@@ -113,10 +114,10 @@ void loop() {
 
   // Execute redundantly with repetition controlled by a small delay
   if (task_target > 0) {
-    myControl.executeTask(task_target, task);
+    _control.executeTask(task_target, task);
   }
   delay(10);  // 10 ms = 100x redundancy, i.e. on/off signal sent 100 times every planning cycle.
-  myKeypad.senseTouch();
+  _keypad.senseTouch();
 }
 
 void reset_cursor() {
@@ -131,18 +132,12 @@ void reset_cursor() {
   t_now.tm_sec    = timeClient.getSeconds();
   
   // Refresh displayed clock 
-  myClock.set_hh(t_now.tm_hour);
-  myClock.set_mm(t_now.tm_min);
-  myClock.set_ss(t_now.tm_sec);
-  myClock.showTime();
+  _clock.set_hh(t_now.tm_hour);
+  _clock.set_mm(t_now.tm_min);
+  _clock.set_ss(t_now.tm_sec);
+  _clock.showTime();
 
   // Reset timer deltas 
-  myControl.initialize_deltas(t_now);
-  for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
-    time_t tt_ON = mktime(&myControl._eSockets[i].t_ON); Serial.print(ctime(&tt_ON));  
-    time_t tt_OFF = mktime(&myControl._eSockets[i].t_OFF); Serial.print(ctime(&tt_OFF));
-    time_t tt_now = mktime(&t_now); Serial.print(ctime(&tt_now));
-    Serial.print("Switching ON in "); Serial.println(myControl._eSockets[i].delta_on);
-    Serial.print("Switching OFF in "); Serial.println(myControl._eSockets[i].delta_off);
-  }
+  _control.set_deltas(t_now);
+  _control.print_timetable(t_now);
 };

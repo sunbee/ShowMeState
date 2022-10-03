@@ -24,16 +24,20 @@ struct eSocket {
 class Control {
     public:
         Control(CRUDaLittle*);
-        void initialize_deltas(struct tm);
+        void init();
+        void set_deltas(struct tm);
         void advanceCursor1s();
         void executeTask(int, bool);        
         struct eSocket _eSockets[NUMBER_OF_ESOCKETS];
         bool is_midnight();
+        void print_timetable(struct tm);
+        String log_record();
     private:
         double delta_midnight; 
         RCSwitch _switch = RCSwitch();
         CRUDaLittle* _CRUD;
         const char* configJSON_path = "/config.JSON";
+        const char* Path2_Dummy     = "/dummy";
         String configJSON;
 
 };

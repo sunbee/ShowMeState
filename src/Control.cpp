@@ -1,18 +1,24 @@
 #include "Control.h"
 
 Control::Control(CRUDaLittle* _CRUD) {
+    this->_CRUD = _CRUD;
+
     // Configure Tx
     this->_switch.enableTransmit(0);     // ESP8266-12E GPIO#0 ~ D3
     this->_switch.setProtocol(1);        // Protocol no. (default is 1, will work for most outlets)
     this->_switch.setPulseLength(320);   // Pulse length (optional)
     this->_switch.setRepeatTransmit(3);  // Number of tx repetitions (optional)
+}
 
-    this->_CRUD = _CRUD;
-    // char configJSON[] = CONFIG_JSON;
+void Control::init() {
+    char configJSON[] = CONFIG_JSON;
     this->_CRUD->readaLittle(&this->configJSON, this->configJSON_path);
-    StaticJsonDocument<384> configDOC;
+    Serial.print("Configured as: ");
+    Serial.println(this->configJSON);
+    StaticJsonDocument<512> configDOC;
     DeserializationError err = deserializeJson(configDOC, this->configJSON.c_str());
-    
+    //DeserializationError err = deserializeJson(configDOC, configJSON);    
+
     /*
     * TODO 
     * RREPLACE BY MECHANISM TO READ CONFIGURATION FILE   
@@ -52,7 +58,7 @@ Control::Control(CRUDaLittle* _CRUD) {
     }
 }
 
-void Control::initialize_deltas(struct tm t_now) {
+void Control::set_deltas(struct tm t_now) {
     time_t raw_t_now = mktime(&t_now);
 
     for (int i=0; i < NUMBER_OF_ESOCKETS; i++) { 
@@ -95,4 +101,33 @@ void Control::executeTask(int ID, bool ON) {
             ON == true ? this->_switch.send(this->_eSockets[i].code_ON, 32) : this->_switch.send(this->_eSockets[i].code_OFF, 32);    
         }
     }
+}
+
+void Control::print_timetable(struct tm t_now) {
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+        time_t tt_ON = mktime(&this->_eSockets[i].t_ON); Serial.print(ctime(&tt_ON));  
+        time_t tt_OFF = mktime(&this->_eSockets[i].t_OFF); Serial.print(ctime(&tt_OFF));
+        time_t tt_now = mktime(&t_now); Serial.print(ctime(&tt_now));
+        Serial.print("Switching ON in "); Serial.println(this->_eSockets[i].delta_on);
+        Serial.print("Switching OFF in "); Serial.println(this->_eSockets[i].delta_off);
+    }
+}
+
+String Control::log_record() {
+    short int task_target;
+    bool task;
+    String log_record;
+    for (int i=0; i < NUMBER_OF_ESOCKETS; i++) {
+        log_record += (String)"_ON_" + this->_eSockets[i].delta_on;
+        if (this->_eSockets[i].delta_on == 0) {
+            task_target = this->_eSockets[i].ID;
+            task = true;
+            }
+        log_record += (String) "_OFF_" + (this->_eSockets[i].delta_off);
+        if (this->_eSockets[i].delta_off == 0) {
+            task_target = this->_eSockets[i].ID;
+            task = false;
+        }
+    }
+    return log_record;
 }

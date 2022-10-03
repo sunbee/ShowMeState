@@ -25,7 +25,7 @@ Keypad myKeypad = Keypad();
 AnalogClock myClock = AnalogClock();
 
 #include "Control.h"
-Control myControl = Control();
+Control myControl = Control(&_littleCRUD);
 double delta2_ON;
 double delta2_OFF;
 

@@ -1,15 +1,18 @@
 #include "Control.h"
 
-Control::Control() {
+Control::Control(CRUDaLittle* _CRUD) {
     // Configure Tx
     this->_switch.enableTransmit(0);     // ESP8266-12E GPIO#0 ~ D3
     this->_switch.setProtocol(1);        // Protocol no. (default is 1, will work for most outlets)
     this->_switch.setPulseLength(320);   // Pulse length (optional)
     this->_switch.setRepeatTransmit(3);  // Number of tx repetitions (optional)
 
-    char configJSON[] = CONFIG_JSON;
+    this->_CRUD = _CRUD;
+    // char configJSON[] = CONFIG_JSON;
+    this->_CRUD->readaLittle(&this->configJSON, this->configJSON_path);
     StaticJsonDocument<384> configDOC;
-    DeserializationError err = deserializeJson(configDOC, configJSON);
+    DeserializationError err = deserializeJson(configDOC, this->configJSON.c_str());
+    
     /*
     * TODO 
     * RREPLACE BY MECHANISM TO READ CONFIGURATION FILE   

@@ -6,6 +6,8 @@
 #include <RCSwitch.h>
 #include <time.h>
 
+#include "CRUDaLittle.h"
+
 #define CONFIG_JSON "[{'ID':1,'t_ON':'11:28','t_OFF':'11:29','code_ON':1949669955,'code_OFF':1949672782},{'ID':2,'t_ON':'11:28:30','t_OFF':'11:29:30','code_ON':1949668413,'code_OFF':1949674324},{'ID':3,'t_ON':'17:30','t_OFF':'21:00','code_ON':1949670469,'code_OFF':1949672268}]"
 #define NUMBER_OF_ESOCKETS 3
 
@@ -21,7 +23,7 @@ struct eSocket {
 
 class Control {
     public:
-        Control();
+        Control(CRUDaLittle*);
         void initialize_deltas(struct tm);
         void advanceCursor1s();
         void executeTask(int, bool);        
@@ -30,6 +32,10 @@ class Control {
     private:
         double delta_midnight; 
         RCSwitch _switch = RCSwitch();
+        CRUDaLittle* _CRUD;
+        const char* configJSON_path = "/config.JSON";
+        String configJSON;
+
 };
 
 #endif

@@ -2,6 +2,9 @@
 #include <time.h>
 #include "LittleFS.h"
 
+#include "CRUDaLittle.h"
+CRUDaLittle _littleCRUD = CRUDaLittle();
+
 #include <ESP8266WiFi.h>
 #include "GuruWebServer.h"
 GuruWebServer _WWW;
@@ -38,6 +41,7 @@ void setup() {
   Serial.begin(9600);
 
   // Set up web-server
+  _WWW._CRUD = &_littleCRUD;
   _WWW.serveWWW();
 
   // Connect to  the NTP client

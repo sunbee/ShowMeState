@@ -17,12 +17,10 @@ void Control::init() {
     Serial.println(this->configJSON);
     StaticJsonDocument<512> configDOC;
     DeserializationError err = deserializeJson(configDOC, this->configJSON.c_str());
-    //DeserializationError err = deserializeJson(configDOC, configJSON);    
-
-    /*
-    * TODO 
-    * RREPLACE BY MECHANISM TO READ CONFIGURATION FILE   
-    * AND INITIALIZE THE SET OF ESOCKET STRUCTURES FROM JSON.
+ 
+    /* 
+    * READ THE SETTINSG IN THE CONFIGURATION FILE AND APPLY
+    * TO INITIALIZE THE SET OF ESOCKET STRUCTURES FROM JSON.
     * AN ESOCKET REPRESENTS 1 H/W DEVICE's ONE ON/OFF CYCLE 
     * IN A 24-HOUR PERIOD. EACH H/W DEVICE HAS A UNIQUE NUMBER ID.
     * SOCKETS REPRESENTING DIFFERENT ON/OFF CYCLES OF THE SAME 

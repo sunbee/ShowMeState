@@ -7,7 +7,7 @@ CRUDaLittle _littleCRUD = CRUDaLittle();
 
 #include <ESP8266WiFi.h>
 #include "GuruWebServer.h"
-GuruWebServer _WWW;
+GuruWebServer _WWW = GuruWebServer(&_littleCRUD);
 
 #include <NTPClient.h>
 #include <WiFiUdp.h>
@@ -41,7 +41,6 @@ void setup() {
   Serial.begin(9600);
 
   // Set up web-server
-  _WWW._CRUD = &_littleCRUD;
   _WWW.serveWWW();
 
   // Connect to  the NTP client
@@ -51,23 +50,17 @@ void setup() {
   
   // Initialise the TFT screen
   _tft.init();
-  myKeypad.init(&_tft);
-  myClock.init(&_tft);
-
-  // Set the rotation before we calibrate
-  _tft.setRotation(1);
-
-  // Clear the screen
-  _tft.fillScreen(TFT_PINK);
-
-  // Calibrate the touch screen and retrieve the scaling factors
-  myKeypad.touchCalibrate();
+  _tft.setRotation(1);          // Set the rotation before we calibrate
+  _tft.fillScreen(TFT_PINK);    // Clear the screen
 
   // Draw keypad
+  myKeypad.init(&_tft);
+  myKeypad.touchCalibrate();    // Calibrate the touch screen and retrieve the scaling factors
   myKeypad.drawKeypad();
   myKeypad.set_control(&myControl);
 
   // Draw clock
+  myClock.init(&_tft);
   myClock.set_x0(160);
   myClock.set_y0(90);
   myClock.set_radius(90);

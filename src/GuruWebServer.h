@@ -11,12 +11,12 @@
 
 class  GuruWebServer {
     public:
-        GuruWebServer();
+        GuruWebServer(CRUDaLittle*);
         void serveWWW();
         bool initializeWiFi();
-        CRUDaLittle* _CRUD;
     private:
         /* data */
+        CRUDaLittle* _CRUD;
         // Search for parameter in HTTP POST request
         const char* POSTed_SSID     = "ssid";
         const char* POSTed_PWD      = "pass";

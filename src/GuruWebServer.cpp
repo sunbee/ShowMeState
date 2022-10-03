@@ -9,8 +9,8 @@ IPAddress localGateway;   //IPAddress localGateway(192, 168, 1, 1); //hardcoded
 IPAddress subnet(255, 255, 255, 0);
 IPAddress DNS(1, 1, 1, 1);
 
-GuruWebServer::GuruWebServer(/* args */) {
-
+GuruWebServer::GuruWebServer(CRUDaLittle* _CRUD) {
+    this->_CRUD = _CRUD;
 }
 
 bool GuruWebServer::initializeWiFi() {
